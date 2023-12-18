@@ -24,10 +24,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Login to npm
+        run: npm login --registry=https://registry.npmjs.org/ --always-auth --username=${{ secrets.NPM_USERNAME }} --password=${{ secrets.NPM_TOKEN }} --email=${{ secrets.NPM_EMAIL }}
+
       - name: Build
         run: npm run build
 
       - name: Publish to npm
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
