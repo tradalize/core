@@ -19,16 +19,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: "20.x"
+          registry-url: "https://registry.npmjs.org"
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Login to npm
-        run: npm login --registry=https://registry.npmjs.org/ --always-auth --username=${{ secrets.NPM_USERNAME }} --password=${{ secrets.NPM_TOKEN }} --email=${{ secrets.NPM_EMAIL }}
-
-      - name: Build
-        run: npm run build
-
-      - name: Publish to npm
-        run: npm publish
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
