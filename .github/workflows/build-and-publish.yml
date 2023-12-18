@@ -28,7 +28,6 @@ jobs:
         run: npm run build
 
       - name: Publish to npm
-        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
