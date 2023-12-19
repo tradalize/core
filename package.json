@@ -25,6 +25,9 @@
     "url": "https://github.com/tradalize/core/issues"
   },
   "homepage": "https://github.com/tradalize/core#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/node": "^20.10.5",
     "tsup": "^8.0.1",
