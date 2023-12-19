@@ -10,7 +10,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest"
+    "test": "vitest",
+    "release": "npm run build && changeset publish"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "@types/node": "^20.10.5",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
