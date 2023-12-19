@@ -1,6 +1,6 @@
 {
   "name": "@tradalize/core",
-  "version": "0.0.0-semantic-release",
+  "version": "0.0.1",
   "description": "Backtesting framework",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
