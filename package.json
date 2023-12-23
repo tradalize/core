@@ -3,7 +3,6 @@
 	"version": "0.0.5",
 	"description": "Backtesting framework",
 	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
 	"type": "module",
 	"files": [
