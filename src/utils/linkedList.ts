@@ -37,4 +37,23 @@ export class LinkedList<T> {
       this.push(value);
     }
   }
+
+  /**
+   * @description Remove first item from list and return it.
+   */
+  public shift() {
+    const prevHead = this.head;
+
+    if (!prevHead) {
+      return null;
+    }
+
+    if (prevHead.next === this.tail) {
+      this.tail = null;
+    }
+
+    this.head = prevHead.next;
+
+    return prevHead.value;
+  }
 }
