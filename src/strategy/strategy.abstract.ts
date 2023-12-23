@@ -1,4 +1,4 @@
-import { ObjectValues } from "../../dist/utils/utility.types.js";
+import type { ObjectValues } from "../utils/utility.types.js";
 import { Candle } from "../index.js";
 
 export const POSITION_DIRECTION = {

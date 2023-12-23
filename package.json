@@ -14,7 +14,8 @@
 		"test": "vitest",
 		"release": "npm run build && changeset publish",
 		"format": "prettier . --write",
-		"lint": "eslint . --fix && npm run format"
+		"lint": "eslint . --fix && npm run format",
+		"lint:ci": "eslint ./src && prettier ./src --check"
 	},
 	"repository": {
 		"type": "git",

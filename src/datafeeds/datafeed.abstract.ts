@@ -1,5 +1,5 @@
 import { LinkedList } from "../utils/linkedList.js";
-import { ObjectValues } from "../utils/utility.types.js";
+import type { ObjectValues } from "../utils/utility.types.js";
 
 export type Candle = {
 	open: number;
