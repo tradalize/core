@@ -1,0 +1,5 @@
+---
+"@tradalize/core": patch
+---
+
+eslint

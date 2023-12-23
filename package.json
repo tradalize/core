@@ -1,40 +1,47 @@
 {
-  "name": "@tradalize/core",
-  "version": "0.0.4",
-  "description": "Backtesting framework",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "type": "module",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "test": "vitest",
-    "release": "npm run build && changeset publish"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tradalize/core.git"
-  },
-  "keywords": [
-    "trading"
-  ],
-  "author": "Vladyslav Bezsmertnyi",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/tradalize/core/issues"
-  },
-  "homepage": "https://github.com/tradalize/core#readme",
-  "publishConfig": {
-    "access": "public"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.27.1",
-    "@types/node": "^20.10.5",
-    "tsup": "^8.0.1",
-    "typescript": "^5.3.3",
-    "vitest": "^1.0.4"
-  }
+	"name": "@tradalize/core",
+	"version": "0.0.4",
+	"description": "Backtesting framework",
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsup",
+		"test": "vitest",
+		"release": "npm run build && changeset publish",
+		"format": "prettier . --write",
+		"lint": "eslint . --fix && npm run format"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/tradalize/core.git"
+	},
+	"keywords": [
+		"trading"
+	],
+	"author": "Vladyslav Bezsmertnyi",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/tradalize/core/issues"
+	},
+	"homepage": "https://github.com/tradalize/core#readme",
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.27.1",
+		"@types/node": "^20.10.5",
+		"@typescript-eslint/eslint-plugin": "^6.15.0",
+		"@typescript-eslint/parser": "^6.15.0",
+		"eslint": "^8.56.0",
+		"eslint-config-prettier": "^9.1.0",
+		"prettier": "3.1.1",
+		"tsup": "^8.0.1",
+		"typescript": "^5.3.3",
+		"vitest": "^1.0.4"
+	}
 }
