@@ -1,4 +1,4 @@
-import { Candle } from "..";
+import { Candle } from "../index.js";
 
 export const enum PositionDirection {
   Long = 1,

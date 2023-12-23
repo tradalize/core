@@ -1,3 +1,3 @@
-export * from "./datafeeds";
-export * from "./strategy/strategy.abstract";
-export * from "./mainframe";
+export * from "./datafeeds/index.js";
+export * from "./strategy/strategy.abstract.js";
+export * from "./mainframe.js";

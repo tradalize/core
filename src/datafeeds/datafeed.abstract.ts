@@ -1,4 +1,4 @@
-import { LinkedList } from "../utils/linkedList";
+import { LinkedList } from "../utils/linkedList.js";
 
 export type Candle = {
   open: number;

@@ -11,30 +11,30 @@ describe("Linked list", () => {
       linkedList.push(3);
 
       const head = linkedList.head;
-      const secondItem = head.next;
-      const therdItem = secondItem.next;
+      const secondItem = head?.next;
+      const therdItem = secondItem?.next;
 
-      expect(head.value).toBe(1);
-      expect(secondItem.value).toBe(2);
-      expect(therdItem.value).toBe(3);
-      expect(therdItem.next).toBeNull();
+      expect(head?.value).toBe(1);
+      expect(secondItem?.value).toBe(2);
+      expect(therdItem?.value).toBe(3);
+      expect(therdItem?.next).toBeNull();
     });
 
     test("should push array of items in list", () => {
       const testData = [1, 2, 3, 4, 5];
 
-      const linkedList = new LinkedList();
+      const linkedList = new LinkedList<number>();
 
       linkedList.pushBulk(testData);
 
       let listItem = linkedList.head;
       for (const item of testData) {
-        expect(listItem.value).toBe(item);
+        expect(listItem?.value).toBe(item);
 
-        listItem = listItem.next;
+        listItem = listItem?.next ?? null;
       }
 
-      expect(linkedList.tail.next).toBeNull();
+      expect(linkedList?.tail?.next).toBeNull();
       expect(listItem).toBeNull();
     });
   });
@@ -48,7 +48,7 @@ describe("Linked list", () => {
       const shiftedItem = list.shift();
 
       expect(shiftedItem).toBe(1);
-      expect(list.head.value).toBe(2);
+      expect(list?.head?.value).toBe(2);
       expect(list.tail).toBeNull();
     });
 
@@ -63,7 +63,7 @@ describe("Linked list", () => {
       const shiftedItem = list.shift();
 
       expect(shiftedItem).toBe(testItem1);
-      expect(list.head.value).toBe(testItem2);
+      expect(list?.head?.value).toBe(testItem2);
       expect(list.tail).toBeNull();
     });
   });

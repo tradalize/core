@@ -4,10 +4,10 @@
     "lib": ["es6"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "allowJs": true,
     "outDir": "dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["node_modules/", "src/**/*.test.*"]
 }

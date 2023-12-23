@@ -17,7 +17,7 @@ describe("Datafeed abstract", () => {
   test("should iterate over given list item by item", async () => {
     const testDatafeed = new TestDatafeed();
 
-    const resultArray = [];
+    const resultArray: number[] = [];
 
     while (!testDatafeed.isLast) {
       const next = await testDatafeed.next();

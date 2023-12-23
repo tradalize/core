@@ -1,1 +1,1 @@
-export * from "./datafeed.abstract";
+export * from "./datafeed.abstract.js";
