@@ -4,8 +4,8 @@ export class Mainframe {
   constructor(private datafeed: Datafeed, private strategy: Strategy) {}
 
   public async start() {
-    do {
+    while (!this.datafeed.isLast) {
       this.strategy.update(await this.datafeed.next());
-    } while (!this.datafeed.isLast);
+    }
   }
 }
