@@ -1,4 +1,5 @@
 import { LinkedList } from "../utils/linkedList.js";
+import { ObjectValues } from "../utils/utility.types.js";
 
 export type Candle = {
   open: number;
@@ -10,15 +11,17 @@ export type Candle = {
   volume: number;
 };
 
-export const enum Timeframe {
-  OneMinute = "1m",
-  FiveMinutes = "5m",
-  FifteenMinutes = "15m",
-  OneHour = "1h",
-  FourHours = "4h",
-  OneDay = "1d",
-  OneWeek = "1w",
-}
+export const TIMEFRAME = {
+  OneMinute: "1m",
+  FiveMinutes: "5m",
+  FifteenMinutes: "15m",
+  OneHour: "1h",
+  FourHours: "4h",
+  OneDay: "1d",
+  OneWeek: "1w",
+} as const;
+
+export type Timeframe = ObjectValues<typeof TIMEFRAME>;
 
 export abstract class Datafeed<T = Candle> {
   list = new LinkedList<T>();
