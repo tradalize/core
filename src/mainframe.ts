@@ -7,6 +7,8 @@ export class Mainframe {
   ) {}
 
   public async start() {
+    await this.datafeed.preloadData();
+
     while (!this.datafeed.isLast) {
       this.strategy.update(await this.datafeed.next());
     }

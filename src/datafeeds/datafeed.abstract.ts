@@ -30,6 +30,10 @@ export abstract class Datafeed<T = Candle> {
     this.list.pushBulk(data);
   }
 
+  public async preloadData() {
+    this.list.pushBulk(await this.loadNextChunk());
+  }
+
   public async next(): Promise<T> {
     const nextItem = this.list.shift();
 
