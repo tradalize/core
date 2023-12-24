@@ -1,4 +1,4 @@
-import { LinkedList } from "../utils/linkedList.js";
+import { LinkedList } from "../dataStructures//linkedList.js";
 import type { ObjectValues } from "../utils/utility.types.js";
 
 export type Candle = {
