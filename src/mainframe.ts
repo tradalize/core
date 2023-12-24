@@ -6,7 +6,7 @@ export class Mainframe {
     private strategy: Strategy
   ) {}
 
-  public async start() {
+  public async backtest() {
     await this.datafeed.preloadData();
 
     while (!this.datafeed.isLast) {

@@ -36,7 +36,7 @@ describe("Mainframe", () => {
 
     const mf = new Mainframe(testDf, testStrat);
 
-    await mf.start();
+    await mf.backtest();
 
     expect(testStrat.update).toHaveBeenCalledTimes(5);
     expect(testStrat.update).toHaveBeenNthCalledWith(1, candle1);
