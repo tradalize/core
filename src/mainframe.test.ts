@@ -1,6 +1,12 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { Candle, Datafeed, Mainframe, Strategy } from "./index";
+import {
+  Candle,
+  Datafeed,
+  Mainframe,
+  POSITION_DIRECTION,
+  Strategy,
+} from "./index";
 
 const [candle1, candle2, candle3, candle4, candle5] = new Array(5)
   .fill(0, 0)
@@ -26,6 +32,10 @@ class TestFeed extends Datafeed {
 }
 
 class TestStrat extends Strategy {
+  protected openOnNext = POSITION_DIRECTION.Flat;
+
+  protected closeOnNext = false;
+
   update = vi.fn();
 }
 
