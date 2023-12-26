@@ -1,12 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 
-import {
-  Candle,
-  Datafeed,
-  Mainframe,
-  POSITION_DIRECTION,
-  Strategy,
-} from "./index";
+import { Candle, Datafeed, Mainframe, Strategy } from "./index";
+
+import { MockBroker } from "./brokers/mocks";
 
 const [candle1, candle2, candle3, candle4, candle5] = new Array(5)
   .fill(0, 0)
@@ -32,17 +28,13 @@ class TestFeed extends Datafeed {
 }
 
 class TestStrat extends Strategy {
-  protected openOnNext = POSITION_DIRECTION.Flat;
-
-  protected closeOnNext = false;
-
   update = vi.fn();
 }
 
 describe("Mainframe", () => {
   test("should iterate over given datafeed and provide each candle to the strategy", async () => {
     const testDf = new TestFeed([candle1, candle2, candle3]);
-    const testStrat = new TestStrat();
+    const testStrat = new TestStrat(new MockBroker());
 
     const mf = new Mainframe(testDf, testStrat);
 
