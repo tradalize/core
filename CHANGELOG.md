@@ -1,5 +1,16 @@
 # @tradalize/core
 
+## 0.1.0
+
+### Minor Changes
+
+- c2bc67c: MVP
+
+### Patch Changes
+
+- 1c560ff: Adding binance futures client
+- e07d522: Adding limited array
+
 ## 0.0.5
 
 ### Patch Changes
