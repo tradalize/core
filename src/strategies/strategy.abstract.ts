@@ -1,9 +1,9 @@
 import { Broker, Candle, PositionDirection } from "../index.js";
 
 export abstract class Strategy {
-  protected abstract openOnNext: PositionDirection | null;
+  protected openOnNext: PositionDirection | null;
 
-  protected abstract closeOnNext: boolean;
+  protected closeOnNext: boolean;
 
   constructor(private broker: Broker) {}
 
