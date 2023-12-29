@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { Datafeed } from ".";
 
 const testArray = [4, 5];
@@ -26,5 +26,15 @@ describe("Datafeed abstract", () => {
     }
 
     expect(resultArray).toStrictEqual([1, 2, 3, 4, 5]);
+  });
+
+  test("should call loadNextChunk on preloadData", async () => {
+    const testDatafeed = new TestDatafeed();
+
+    const loadNexyChunkSpy = vi.spyOn(testDatafeed, "loadNextChunk");
+
+    await testDatafeed.preloadData();
+
+    expect(loadNexyChunkSpy).toHaveBeenCalledTimes(1);
   });
 });
