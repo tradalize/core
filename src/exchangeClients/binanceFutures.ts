@@ -64,10 +64,7 @@ export class BinanceFuturesClient {
       console.info(`Start loading ${symbol} ${interval}`);
 
       const { data } = await this.client.get<BinanceRawKline[]>(
-        "/fapi/v1/klines?" + params.toString(),
-        {
-          timeout: 2000,
-        }
+        "/fapi/v1/klines?" + params.toString()
       );
       console.info(
         `Data loaded: ${data.length} items since ${
