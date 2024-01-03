@@ -27,10 +27,7 @@ describe("Binance futures client", () => {
       await client.getDataForPeriod({ symbol, interval });
 
       expect(axiosGetMock).toHaveBeenCalledWith(
-        `/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=1500`,
-        {
-          timeout: 2000,
-        }
+        `/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=1500`
       );
     });
 
@@ -54,10 +51,7 @@ describe("Binance futures client", () => {
       });
 
       expect(axiosGetMock).toHaveBeenCalledWith(
-        `/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}&startTime=${startTime.getTime()}&endTime=${endTime.getTime()}`,
-        {
-          timeout: 2000,
-        }
+        `/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}&startTime=${startTime.getTime()}&endTime=${endTime.getTime()}`
       );
     });
 

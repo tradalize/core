@@ -19,15 +19,15 @@ export type Position = {
   closePrice?: number;
 };
 
-type OpenPositionPayload = {
+export type OpenPositionPayload = {
   price: number;
   direction: PositionDirection;
-  time?: number | Date;
+  time?: number;
 };
 
-type ClosePositionPayload = {
+export type ClosePositionPayload = {
   price: number;
-  time?: number | Date;
+  time?: number;
 };
 
 export abstract class Broker {
