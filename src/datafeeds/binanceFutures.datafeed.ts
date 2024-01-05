@@ -13,7 +13,7 @@ type BinanceFuturesParams = {
    * Timeframe
    * @example "1d", "1h"
    */
-  interval: Timeframe;
+  timeframe: Timeframe;
   /**
    * Date to start load from
    */
@@ -27,29 +27,38 @@ type BinanceFuturesParams = {
 export class BinanceFuturesDatafeed extends Datafeed {
   private client: BinanceFuturesClient;
 
-  private adjustedStartTime?: Date;
+  public symbol: string;
+
+  public timeframe: Timeframe;
+
+  private startTime?: Date;
+
+  private endTime?: Date;
 
   constructor(
-    private params: BinanceFuturesParams,
+    { symbol, timeframe, endTime, startTime }: BinanceFuturesParams,
     axiosStatic: AxiosStatic = axios
   ) {
     super();
 
-    this.adjustedStartTime = params.startTime;
+    this.symbol = symbol;
+    this.timeframe = timeframe;
+    this.startTime = startTime;
+    this.endTime = endTime;
 
     this.client = new BinanceFuturesClient(axiosStatic);
   }
 
   public async loadNextChunk(): Promise<Candle[]> {
     const candles = await this.client.getDataForPeriod({
-      symbol: this.params.symbol,
-      interval: this.params.interval,
-      startTime: this.adjustedStartTime,
-      endTime: this.params.endTime,
+      symbol: this.symbol,
+      interval: this.timeframe,
+      startTime: this.startTime,
+      endTime: this.endTime,
     });
 
     if (candles.length !== 0) {
-      this.adjustedStartTime = new Date(candles.at(-1).closeTime);
+      this.startTime = new Date(candles.at(-1).closeTime);
     }
 
     return candles;

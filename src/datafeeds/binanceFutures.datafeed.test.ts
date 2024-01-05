@@ -17,7 +17,7 @@ describe("Binance Futures datafeed", () => {
   describe("loadNextChunk", () => {
     test("should call correct client method with correct params", async () => {
       const symbol = "BTCUSDT";
-      const interval = "1d";
+      const timeframe = "1d";
       const startTime = new Date("01 01 2020");
       const endTime = new Date("01 02 2020");
 
@@ -27,7 +27,7 @@ describe("Binance Futures datafeed", () => {
 
       const df = new BinanceFuturesDatafeed({
         symbol,
-        interval,
+        timeframe,
         startTime,
         endTime,
       });
@@ -37,7 +37,7 @@ describe("Binance Futures datafeed", () => {
       expect(result).toStrictEqual([mockCandle]);
       expect(getDataForPeriodSpy).toHaveBeenCalledWith({
         symbol,
-        interval,
+        interval: timeframe,
         startTime,
         endTime,
       });

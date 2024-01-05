@@ -24,7 +24,11 @@ export const TIMEFRAME = {
 export type Timeframe = ObjectValues<typeof TIMEFRAME>;
 
 export abstract class Datafeed<T = Candle> {
-  list = new LinkedList<T>();
+  public list = new LinkedList<T>();
+
+  public abstract symbol: string;
+
+  public abstract timeframe: Timeframe;
 
   constructor(data: T[] = []) {
     this.list.pushBulk(data);

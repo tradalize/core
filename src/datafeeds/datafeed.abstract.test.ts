@@ -1,9 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
-import { Datafeed } from ".";
+import { Datafeed, Timeframe } from ".";
 
 const testArray = [4, 5];
 
 class TestDatafeed extends Datafeed<number> {
+  public symbol: string;
+
+  public timeframe: Timeframe;
+
   constructor() {
     super([1, 2, 3]);
   }

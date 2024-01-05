@@ -20,6 +20,8 @@ export type Position = {
 };
 
 export type OpenPositionPayload = {
+  symbol: string;
+  timeframe: Timeframe;
   price: number;
   direction: PositionDirection;
   time?: number;

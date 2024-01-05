@@ -9,18 +9,28 @@ import {
 export class MemoryBroker extends Broker {
   public positionsList = new LinkedList<Position>();
 
-  public openPosition(payload: OpenPositionPayload): void | Promise<void> {
+  private positionCounter = 0;
+
+  public openPosition({
+    symbol,
+    timeframe,
+    price,
+    time,
+    direction,
+  }: OpenPositionPayload): void | Promise<void> {
     if (this.isInPosition) {
       throw new Error("Already have open position");
     }
 
+    this.positionCounter++;
+
     const newPosition: Position = {
-      id: "string | number",
-      symbol: "String",
-      timeframe: "1d",
-      direction: payload.direction,
-      openTime: payload.time,
-      openPrice: payload.price,
+      id: this.positionCounter,
+      symbol,
+      timeframe,
+      direction,
+      openTime: time,
+      openPrice: price,
     };
 
     this.positionsList.push(newPosition);
