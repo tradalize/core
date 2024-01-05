@@ -67,4 +67,16 @@ describe("Linked list", () => {
       expect(list.tail).toBeNull();
     });
   });
+
+  describe("toArray", () => {
+    test("shoud return all list items in array", () => {
+      const linkedList = new LinkedList();
+
+      linkedList.push(1);
+      linkedList.push(2);
+      linkedList.push(3);
+
+      expect(linkedList.toArray()).toStrictEqual([1, 2, 3]);
+    });
+  });
 });

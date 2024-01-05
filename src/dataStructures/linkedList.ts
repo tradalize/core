@@ -56,4 +56,18 @@ export class LinkedList<T> {
 
     return prevHead.value;
   }
+
+  public toArray() {
+    const arr = [];
+
+    let cur = this.head;
+
+    while (cur !== null) {
+      arr.push(cur.value);
+
+      cur = cur.next;
+    }
+
+    return arr;
+  }
 }
