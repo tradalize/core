@@ -19,6 +19,7 @@ export class MemoryBroker extends Broker {
     direction,
   }: OpenPositionPayload): void | Promise<void> {
     if (this.isInPosition) {
+      console.error("Already have open position", this.currentPosition);
       throw new Error("Already have open position");
     }
 
