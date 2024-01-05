@@ -13,9 +13,9 @@ export type Position = {
   symbol: string;
   timeframe: Timeframe;
   direction: PositionDirection;
-  openTime: Date;
+  openTime: number;
   openPrice: number;
-  closeTime?: Date;
+  closeTime?: number;
   closePrice?: number;
 };
 
