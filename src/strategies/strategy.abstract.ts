@@ -1,4 +1,4 @@
-import { Broker, Candle, PositionDirection } from "../index.js";
+import { Broker, Candle, PositionDirection, Timeframe } from "../index.js";
 
 export abstract class Strategy {
   protected openOnNext: PositionDirection | null;
@@ -7,17 +7,25 @@ export abstract class Strategy {
 
   constructor(private broker: Broker) {}
 
-  public async onBeforeUpdate(candle: Candle): Promise<void> {
+  public async onBeforeUpdate(
+    symbol: string,
+    timeframe: Timeframe,
+    candle: Candle
+  ): Promise<void> {
     await this.checkCloseOnNext(candle);
 
-    await this.checkOpenOnNext(candle);
+    await this.checkOpenOnNext(symbol, timeframe, candle);
 
     return;
   }
 
   public abstract update(candle: Candle): void | Promise<void>;
 
-  public async checkOpenOnNext(candle: Candle): Promise<void> {
+  public async checkOpenOnNext(
+    symbol: string,
+    timeframe: Timeframe,
+    candle: Candle
+  ): Promise<void> {
     if (!this.openOnNext) {
       return;
     }
@@ -25,6 +33,8 @@ export abstract class Strategy {
     const { openTime, open } = candle;
 
     await this.broker.openPosition({
+      symbol,
+      timeframe,
       price: open,
       direction: this.openOnNext,
       time: openTime,

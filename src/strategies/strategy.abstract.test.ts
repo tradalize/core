@@ -18,6 +18,9 @@ class MockStrategy extends Strategy {
   public update = vi.fn();
 }
 
+const symbol = "BTCUSDT";
+const timeframe = "1d";
+
 const mockCandle: Candle = {
   openTime: new Date("01 01 2020").getTime(),
   open: 100,
@@ -36,9 +39,9 @@ describe("Strategy abstract", () => {
       const openSpy = vi.spyOn(strat, "checkOpenOnNext");
       const closeSpy = vi.spyOn(strat, "checkCloseOnNext");
 
-      await strat.onBeforeUpdate(mockCandle);
+      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
 
-      expect(openSpy).toHaveBeenCalledWith(mockCandle);
+      expect(openSpy).toHaveBeenCalledWith(symbol, timeframe, mockCandle);
       expect(closeSpy).toHaveBeenCalledWith(mockCandle);
     });
   });
@@ -47,7 +50,7 @@ describe("Strategy abstract", () => {
     test("should not call brokers openPosition method if openOnNext is null", async () => {
       const strat = new MockStrategy(mockBroker, null);
 
-      await strat.checkOpenOnNext(mockCandle);
+      await strat.checkOpenOnNext(symbol, timeframe, mockCandle);
 
       expect(mockBroker.openPosition).not.toHaveBeenCalled();
     });
@@ -55,9 +58,11 @@ describe("Strategy abstract", () => {
     test("should call brokers openPosition method if openOnNext is set", async () => {
       const strat = new MockStrategy(mockBroker, 1);
 
-      await strat.checkOpenOnNext(mockCandle);
+      await strat.checkOpenOnNext(symbol, timeframe, mockCandle);
 
       expect(mockBroker.openPosition).toHaveBeenCalledWith({
+        symbol,
+        timeframe,
         direction: 1,
         price: mockCandle.open,
         time: mockCandle.openTime,
