@@ -1,5 +1,12 @@
 # @tradalize/core
 
+## 0.1.1
+
+### Patch Changes
+
+- a7cce9a: Memory broker
+- 8dca335: Providing additional data to broker
+
 ## 0.1.0
 
 ### Minor Changes
