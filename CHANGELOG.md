@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.1.3
+
+### Patch Changes
+
+- f6e5e0d: Adding readme
+
 ## 0.1.2
 
 ### Patch Changes
