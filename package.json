@@ -22,7 +22,10 @@
 		"url": "git+https://github.com/tradalize/core.git"
 	},
 	"keywords": [
-		"trading"
+		"trading",
+		"backtesting",
+		"quant",
+		"finance"
 	],
 	"author": "Vladyslav Bezsmertnyi",
 	"license": "MIT",
