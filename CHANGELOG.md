@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.1.2
+
+### Patch Changes
+
+- 2da1c99: Analitic module
+
 ## 0.1.1
 
 ### Patch Changes
