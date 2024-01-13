@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.1.4
+
+### Patch Changes
+
+- ed75407: fixing type
+
 ## 0.1.3
 
 ### Patch Changes
