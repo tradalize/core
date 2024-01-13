@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.1.5
+
+### Patch Changes
+
+- 8006396: Adding SL/TP logic
+
 ## 0.1.4
 
 ### Patch Changes
