@@ -21,11 +21,11 @@ export type Position = {
   closePrice?: number;
 };
 
-export type OpenPositionPayload = {
-  symbol: string;
-  timeframe: Timeframe;
+export type OpenPositionPayload = Pick<
+  Position,
+  "symbol" | "timeframe" | "direction" | "sl" | "tp"
+> & {
   price: number;
-  direction: PositionDirection;
   time?: number;
 };
 

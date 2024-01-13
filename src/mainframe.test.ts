@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { Candle, Datafeed, Mainframe, Strategy } from "./index";
+import { Candle, Datafeed, Mainframe, Strategy, Timeframe } from "./index";
 
 import { MockBroker } from "./brokers/mocks";
 
@@ -22,6 +22,9 @@ const [candle1, candle2, candle3, candle4, candle5] = new Array(5)
 const secondPartData = [candle4, candle5];
 
 class TestFeed extends Datafeed {
+  public symbol = "BTCUSDT";
+  public timeframe: Timeframe = "1d";
+
   public async loadNextChunk() {
     return secondPartData.splice(0);
   }

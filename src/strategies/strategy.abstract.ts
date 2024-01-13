@@ -1,23 +1,18 @@
 import {
   Broker,
   Candle,
+  OpenPositionPayload,
   POSITION_DIRECTION,
-  PositionDirection,
-  Timeframe,
 } from "../index.js";
 
 export abstract class Strategy {
-  protected openOnNext: PositionDirection | null;
+  protected openOnNext: Omit<OpenPositionPayload, "price" | "openTime"> | null;
 
   protected closeOnNext: boolean;
 
   constructor(private broker: Broker) {}
 
-  public async onBeforeUpdate(
-    symbol: string,
-    timeframe: Timeframe,
-    candle: Candle
-  ): Promise<void> {
+  public async onBeforeUpdate(candle: Candle): Promise<void> {
     if (this.broker?.currentPosition?.sl) {
       await this.checkSl(candle);
     }
@@ -28,18 +23,14 @@ export abstract class Strategy {
 
     await this.checkCloseOnNext(candle);
 
-    await this.checkOpenOnNext(symbol, timeframe, candle);
+    await this.checkOpenOnNext(candle);
 
     return;
   }
 
   public abstract update(candle: Candle): void | Promise<void>;
 
-  public async checkOpenOnNext(
-    symbol: string,
-    timeframe: Timeframe,
-    candle: Candle
-  ): Promise<void> {
+  public async checkOpenOnNext(candle: Candle): Promise<void> {
     if (!this.openOnNext) {
       return;
     }
@@ -47,11 +38,9 @@ export abstract class Strategy {
     const { openTime, open } = candle;
 
     await this.broker.openPosition({
-      symbol,
-      timeframe,
-      price: open,
-      direction: this.openOnNext,
+      ...this.openOnNext,
       time: openTime,
+      price: open,
     });
 
     this.openOnNext = null;

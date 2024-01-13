@@ -4,15 +4,18 @@ import { Strategy } from "./strategy.abstract";
 import { Candle } from "../datafeeds";
 import {
   Broker,
+  OpenPositionPayload,
   POSITION_DIRECTION,
   Position,
-  PositionDirection,
 } from "../brokers";
 
 class MockStrategy extends Strategy {
   constructor(
     broker: Broker,
-    protected openOnNext: PositionDirection | null = null,
+    protected openOnNext: Omit<
+      OpenPositionPayload,
+      "price" | "openTime"
+    > | null = null,
     protected closeOnNext = false
   ) {
     super(broker);
@@ -43,9 +46,9 @@ describe("Strategy abstract", () => {
       const openSpy = vi.spyOn(strat, "checkOpenOnNext");
       const closeSpy = vi.spyOn(strat, "checkCloseOnNext");
 
-      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+      await strat.onBeforeUpdate(mockCandle);
 
-      expect(openSpy).toHaveBeenCalledWith(symbol, timeframe, mockCandle);
+      expect(openSpy).toHaveBeenCalledWith(mockCandle);
       expect(closeSpy).toHaveBeenCalledWith(mockCandle);
     });
 
@@ -59,7 +62,7 @@ describe("Strategy abstract", () => {
 
       const strat = new MockStrategy(mockBroker);
 
-      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+      await strat.onBeforeUpdate(mockCandle);
 
       expect(mockBroker.closePosition).toHaveBeenCalledWith({
         price: 60,
@@ -77,7 +80,7 @@ describe("Strategy abstract", () => {
 
       const strat = new MockStrategy(mockBroker);
 
-      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+      await strat.onBeforeUpdate(mockCandle);
 
       expect(mockBroker.closePosition).toHaveBeenCalledWith({
         price: 130,
@@ -95,7 +98,7 @@ describe("Strategy abstract", () => {
 
       const strat = new MockStrategy(mockBroker);
 
-      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+      await strat.onBeforeUpdate(mockCandle);
 
       expect(mockBroker.closePosition).toHaveBeenCalledWith({
         price: 130,
@@ -113,7 +116,7 @@ describe("Strategy abstract", () => {
 
       const strat = new MockStrategy(mockBroker);
 
-      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+      await strat.onBeforeUpdate(mockCandle);
 
       expect(mockBroker.closePosition).toHaveBeenCalledWith({
         price: 60,
@@ -128,7 +131,7 @@ describe("Strategy abstract", () => {
 
       const strat = new MockStrategy(mockBroker, null);
 
-      await strat.checkOpenOnNext(symbol, timeframe, mockCandle);
+      await strat.checkOpenOnNext(mockCandle);
 
       expect(mockBroker.openPosition).not.toHaveBeenCalled();
     });
@@ -136,9 +139,15 @@ describe("Strategy abstract", () => {
     test("should call brokers openPosition method if openOnNext is set", async () => {
       const mockBroker = new MockBroker();
 
-      const strat = new MockStrategy(mockBroker, 1);
+      const strat = new MockStrategy(mockBroker, {
+        symbol,
+        timeframe,
+        direction: POSITION_DIRECTION.Long,
+        sl: 80,
+        tp: 200,
+      });
 
-      await strat.checkOpenOnNext(symbol, timeframe, mockCandle);
+      await strat.checkOpenOnNext(mockCandle);
 
       expect(mockBroker.openPosition).toHaveBeenCalledWith({
         symbol,
@@ -146,6 +155,8 @@ describe("Strategy abstract", () => {
         direction: 1,
         price: mockCandle.open,
         time: mockCandle.openTime,
+        sl: 80,
+        tp: 200,
       });
     });
   });

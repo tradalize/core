@@ -12,11 +12,8 @@ export class Mainframe {
     while (!this.datafeed.isLast) {
       const candle = await this.datafeed.next();
 
-      await this.strategy.onBeforeUpdate(
-        this.datafeed.symbol,
-        this.datafeed.timeframe,
-        candle
-      );
+      await this.strategy.onBeforeUpdate(candle);
+
       await this.strategy.update(candle);
     }
   }

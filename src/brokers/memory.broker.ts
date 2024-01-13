@@ -12,11 +12,9 @@ export class MemoryBroker extends Broker {
   private positionCounter = 0;
 
   public openPosition({
-    symbol,
-    timeframe,
     price,
     time,
-    direction,
+    ...restPositionPayload
   }: OpenPositionPayload): void | Promise<void> {
     if (this.isInPosition) {
       console.warn(
@@ -30,11 +28,9 @@ export class MemoryBroker extends Broker {
 
     const newPosition: Position = {
       id: this.positionCounter,
-      symbol,
-      timeframe,
-      direction,
       openTime: time,
       openPrice: price,
+      ...restPositionPayload,
     };
 
     this.positionsList.push(newPosition);
