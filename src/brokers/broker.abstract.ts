@@ -15,6 +15,8 @@ export type Position = {
   direction: PositionDirection;
   openTime: number;
   openPrice: number;
+  sl?: number;
+  tp?: number;
   closeTime?: number;
   closePrice?: number;
 };

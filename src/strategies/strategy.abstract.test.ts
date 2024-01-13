@@ -2,9 +2,12 @@ import { describe, expect, test, vi } from "vitest";
 import { MockBroker } from "../brokers/mocks";
 import { Strategy } from "./strategy.abstract";
 import { Candle } from "../datafeeds";
-import { Broker, Position, PositionDirection } from "../brokers";
-
-const mockBroker = new MockBroker();
+import {
+  Broker,
+  POSITION_DIRECTION,
+  Position,
+  PositionDirection,
+} from "../brokers";
 
 class MockStrategy extends Strategy {
   constructor(
@@ -34,6 +37,7 @@ const mockCandle: Candle = {
 describe("Strategy abstract", () => {
   describe("onBeforeUpdate", () => {
     test("should call propper methods with propper params", async () => {
+      const mockBroker = new MockBroker();
       const strat = new MockStrategy(mockBroker);
 
       const openSpy = vi.spyOn(strat, "checkOpenOnNext");
@@ -44,10 +48,84 @@ describe("Strategy abstract", () => {
       expect(openSpy).toHaveBeenCalledWith(symbol, timeframe, mockCandle);
       expect(closeSpy).toHaveBeenCalledWith(mockCandle);
     });
+
+    test("should close long position if candle low lower than sl", async () => {
+      const mockBroker = new MockBroker();
+
+      mockBroker.currentPosition = {
+        direction: POSITION_DIRECTION.Long,
+        sl: 60,
+      } as Position;
+
+      const strat = new MockStrategy(mockBroker);
+
+      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+
+      expect(mockBroker.closePosition).toHaveBeenCalledWith({
+        price: 60,
+        time: mockCandle.closeTime,
+      });
+    });
+
+    test("should close short position if candle high higher than sl", async () => {
+      const mockBroker = new MockBroker();
+
+      mockBroker.currentPosition = {
+        direction: POSITION_DIRECTION.Short,
+        sl: 130,
+      } as Position;
+
+      const strat = new MockStrategy(mockBroker);
+
+      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+
+      expect(mockBroker.closePosition).toHaveBeenCalledWith({
+        price: 130,
+        time: mockCandle.closeTime,
+      });
+    });
+
+    test("should close long position if candle high higher than tp", async () => {
+      const mockBroker = new MockBroker();
+
+      mockBroker.currentPosition = {
+        direction: POSITION_DIRECTION.Long,
+        tp: 130,
+      } as Position;
+
+      const strat = new MockStrategy(mockBroker);
+
+      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+
+      expect(mockBroker.closePosition).toHaveBeenCalledWith({
+        price: 130,
+        time: mockCandle.closeTime,
+      });
+    });
+
+    test("should close short position if candle low lower than tp", async () => {
+      const mockBroker = new MockBroker();
+
+      mockBroker.currentPosition = {
+        direction: POSITION_DIRECTION.Short,
+        tp: 60,
+      } as Position;
+
+      const strat = new MockStrategy(mockBroker);
+
+      await strat.onBeforeUpdate(symbol, timeframe, mockCandle);
+
+      expect(mockBroker.closePosition).toHaveBeenCalledWith({
+        price: 60,
+        time: mockCandle.closeTime,
+      });
+    });
   });
 
   describe("checkOpenOnNext", () => {
     test("should not call brokers openPosition method if openOnNext is null", async () => {
+      const mockBroker = new MockBroker();
+
       const strat = new MockStrategy(mockBroker, null);
 
       await strat.checkOpenOnNext(symbol, timeframe, mockCandle);
@@ -56,6 +134,8 @@ describe("Strategy abstract", () => {
     });
 
     test("should call brokers openPosition method if openOnNext is set", async () => {
+      const mockBroker = new MockBroker();
+
       const strat = new MockStrategy(mockBroker, 1);
 
       await strat.checkOpenOnNext(symbol, timeframe, mockCandle);
@@ -72,6 +152,8 @@ describe("Strategy abstract", () => {
 
   describe("checkCloseOnNext", () => {
     test("should not call brokers closePosition method if closeOnNext is false", async () => {
+      const mockBroker = new MockBroker();
+
       const strat = new MockStrategy(mockBroker, null, false);
 
       await strat.checkCloseOnNext(mockCandle);
@@ -80,6 +162,8 @@ describe("Strategy abstract", () => {
     });
 
     test("should not call brokers closePosition method if closeOnNext is true but no current position", async () => {
+      const mockBroker = new MockBroker();
+
       const strat = new MockStrategy(mockBroker, null, true);
 
       await strat.checkCloseOnNext(mockCandle);
@@ -88,6 +172,8 @@ describe("Strategy abstract", () => {
     });
 
     test("should call brokers closePosition method if closeOnNext is true and current position exists", async () => {
+      const mockBroker = new MockBroker();
+
       mockBroker.currentPosition = {} as Position;
       const strat = new MockStrategy(mockBroker, null, true);
 

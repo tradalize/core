@@ -1,4 +1,10 @@
-import { Broker, Candle, PositionDirection, Timeframe } from "../index.js";
+import {
+  Broker,
+  Candle,
+  POSITION_DIRECTION,
+  PositionDirection,
+  Timeframe,
+} from "../index.js";
 
 export abstract class Strategy {
   protected openOnNext: PositionDirection | null;
@@ -12,6 +18,14 @@ export abstract class Strategy {
     timeframe: Timeframe,
     candle: Candle
   ): Promise<void> {
+    if (this.broker?.currentPosition?.sl) {
+      await this.checkSl(candle);
+    }
+
+    if (this.broker?.currentPosition?.tp) {
+      await this.checkTp(candle);
+    }
+
     await this.checkCloseOnNext(candle);
 
     await this.checkOpenOnNext(symbol, timeframe, candle);
@@ -56,5 +70,33 @@ export abstract class Strategy {
     });
 
     this.closeOnNext = false;
+  }
+
+  private async checkSl(candle: Candle) {
+    if (
+      (this.broker.currentPosition.direction === POSITION_DIRECTION.Long &&
+        this.broker.currentPosition.sl > candle.low) ||
+      (this.broker.currentPosition.direction === POSITION_DIRECTION.Short &&
+        this.broker.currentPosition.sl < candle.high)
+    ) {
+      await this.broker.closePosition({
+        price: this.broker.currentPosition.sl,
+        time: candle.closeTime,
+      });
+    }
+  }
+
+  private async checkTp(candle: Candle) {
+    if (
+      (this.broker.currentPosition.direction === POSITION_DIRECTION.Long &&
+        this.broker.currentPosition.tp < candle.high) ||
+      (this.broker.currentPosition.direction === POSITION_DIRECTION.Short &&
+        this.broker.currentPosition.tp > candle.low)
+    ) {
+      await this.broker.closePosition({
+        price: this.broker.currentPosition.tp,
+        time: candle.closeTime,
+      });
+    }
   }
 }
