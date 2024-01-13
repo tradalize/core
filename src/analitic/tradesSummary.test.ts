@@ -35,9 +35,41 @@ const mockTrades: Position[] = [
   },
 ];
 
+const mockUnclosedTrades: Position[] = [
+  {
+    id: 4,
+    symbol: "BTCUSDT",
+    timeframe: "1d",
+    direction: POSITION_DIRECTION.Short,
+    openPrice: 100,
+    openTime: 10 * 1000,
+  },
+];
+
 describe("Trades summary", () => {
   test("should calculate all fields properly", () => {
     const result = getTradesSummary(mockTrades);
+
+    expect(result).toStrictEqual({
+      averageWin: 0.5,
+      averageLoss: -0.25,
+      winrate: 0.67,
+      profitFactor: 2,
+      maxGain: 0.5,
+      maxLoss: -0.25,
+      cumulativePnl: 1687.5,
+      profitResult: 0.6875,
+      tradesCount: 3,
+      winsCount: 2,
+      longsCount: 2,
+      shortsCount: 1,
+      averageTimeInTrade: 90 * 1000,
+      averageTimeInTradeLabel: "1.50 minutes",
+    });
+  });
+
+  test("should ignore not closed trades and  calculate all fields properly", () => {
+    const result = getTradesSummary([...mockTrades, ...mockUnclosedTrades]);
 
     expect(result).toStrictEqual({
       averageWin: 0.5,

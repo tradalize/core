@@ -29,7 +29,7 @@ export function getTradesSummary<T extends Position>(
     trades.reduce(
       (acc, trade) => {
         if (!trade.closePrice || !trade.closeTime) {
-          return;
+          return acc;
         }
 
         const pnl = calcRelativeTradePnlWithFee(trade);

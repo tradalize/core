@@ -48,7 +48,7 @@ describe("Memory broker", () => {
     expect(broker.currentPosition).toBeNull();
   });
 
-  test("should throw on attempt to open new position when current is not closed", () => {
+  test("should log a warn on attempt to open new position when current is not closed and not open a new one", () => {
     const broker = new MemoryBroker();
 
     broker.openPosition({
@@ -59,14 +59,21 @@ describe("Memory broker", () => {
       time: 100,
     });
 
-    expect(() =>
-      broker.openPosition({
-        symbol: "test",
-        timeframe: "1d",
-        price: 123,
-        direction: 1,
-        time: 100,
-      })
-    ).toThrow("Already have open position");
+    broker.openPosition({
+      symbol: "test",
+      timeframe: "1d",
+      price: 456,
+      direction: -1,
+      time: 200,
+    });
+
+    expect(broker.currentPosition).toStrictEqual({
+      id: 1,
+      symbol: "test",
+      timeframe: "1d",
+      direction: 1,
+      openTime: 100,
+      openPrice: 123,
+    });
   });
 });
