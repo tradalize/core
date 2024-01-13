@@ -57,7 +57,7 @@ export class LinkedList<T> {
     return prevHead.value;
   }
 
-  public toArray() {
+  public toArray(): T[] {
     const arr = [];
 
     let cur = this.head;
