@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.1.6
+
+### Patch Changes
+
+- e5e49a4: Types config
+
 ## 0.1.5
 
 ### Patch Changes
