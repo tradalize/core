@@ -1,19 +1,10 @@
 import { BinanceFuturesClient } from "../exchangeClients/binanceFutures.js";
+import { MainframeProps } from "../mainframe.js";
 import { Candle, Datafeed, Timeframe } from "./datafeed.abstract.js";
 import axios from "axios";
 import type { AxiosStatic } from "axios";
 
-type BinanceFuturesParams = {
-  /**
-   * Symbol to load
-   * @example "BTCUSDT"
-   */
-  symbol: string;
-  /**
-   * Timeframe
-   * @example "1d", "1h"
-   */
-  timeframe: Timeframe;
+type BinanceFuturesParams = MainframeProps & {
   /**
    * Date to start load from
    */

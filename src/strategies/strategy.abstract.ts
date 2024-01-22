@@ -1,8 +1,10 @@
 import {
   Broker,
   Candle,
+  MainframeProps,
   OpenPositionPayload,
   POSITION_DIRECTION,
+  PositionDirection,
 } from "../index.js";
 
 export abstract class Strategy {
@@ -28,7 +30,10 @@ export abstract class Strategy {
     return;
   }
 
-  public abstract update(candle: Candle): void | Promise<void>;
+  public abstract update(
+    candle: Candle,
+    props: MainframeProps
+  ): void | Promise<void>;
 
   public async checkOpenOnNext(candle: Candle): Promise<void> {
     if (!this.openOnNext) {
@@ -41,6 +46,8 @@ export abstract class Strategy {
       ...this.openOnNext,
       time: openTime,
       price: open,
+      sl: this.calcSl(open, this.openOnNext.direction),
+      tp: this.calcTp(open, this.openOnNext.direction),
     });
 
     this.openOnNext = null;
@@ -88,4 +95,14 @@ export abstract class Strategy {
       });
     }
   }
+
+  protected abstract calcSl(
+    price: number,
+    direction: PositionDirection
+  ): number | undefined;
+
+  protected abstract calcTp(
+    price: number,
+    direction: PositionDirection
+  ): number | undefined;
 }
