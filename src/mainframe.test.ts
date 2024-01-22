@@ -37,6 +37,10 @@ class TestFeed extends Datafeed {
 
 class TestStrat extends Strategy {
   update = vi.fn();
+
+  calcSl = vi.fn();
+
+  calcTp = vi.fn();
 }
 
 describe("Mainframe", () => {

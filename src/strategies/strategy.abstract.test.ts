@@ -22,6 +22,10 @@ class MockStrategy extends Strategy {
   }
 
   public update = vi.fn();
+
+  calcSl = vi.fn();
+
+  calcTp = vi.fn();
 }
 
 const symbol = "BTCUSDT";
@@ -121,6 +125,7 @@ describe("Strategy abstract", () => {
       expect(mockBroker.closePosition).toHaveBeenCalledWith({
         price: 60,
         time: mockCandle.closeTime,
+        sl: undefined,
       });
     });
   });
@@ -143,9 +148,10 @@ describe("Strategy abstract", () => {
         symbol,
         timeframe,
         direction: POSITION_DIRECTION.Long,
-        sl: 80,
-        tp: 200,
       });
+
+      strat.calcSl.mockReturnValue(80);
+      strat.calcTp.mockReturnValue(200);
 
       await strat.checkOpenOnNext(mockCandle);
 
