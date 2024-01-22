@@ -1,5 +1,15 @@
 # @tradalize/core
 
+## 0.2.0
+
+### Minor Changes
+
+- 90efe74: SL/TP dynamic calculation
+
+### Patch Changes
+
+- 90efe74: Providing context to the strategy
+
 ## 0.1.6
 
 ### Patch Changes
