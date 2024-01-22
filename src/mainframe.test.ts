@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { Candle, Datafeed, Mainframe, Strategy, Timeframe } from "./index";
+import { Candle, Datafeed, Mainframe, MainframeProps, Strategy } from "./index";
 
 import { MockBroker } from "./brokers/mocks";
 
@@ -21,9 +21,14 @@ const [candle1, candle2, candle3, candle4, candle5] = new Array(5)
 
 const secondPartData = [candle4, candle5];
 
+const mockProps: MainframeProps = {
+  symbol: "BTCUSDT",
+  timeframe: "1d",
+} as const;
+
 class TestFeed extends Datafeed {
-  public symbol = "BTCUSDT";
-  public timeframe: Timeframe = "1d";
+  public symbol = mockProps.symbol;
+  public timeframe = mockProps.timeframe;
 
   public async loadNextChunk() {
     return secondPartData.splice(0);
@@ -39,12 +44,12 @@ describe("Mainframe", () => {
     const testDf = new TestFeed([candle1, candle2, candle3]);
     const testStrat = new TestStrat(new MockBroker());
 
-    const mf = new Mainframe(testDf, testStrat);
+    const mf = new Mainframe(testDf, testStrat, mockProps);
 
     await mf.backtest();
 
     expect(testStrat.update).toHaveBeenCalledTimes(5);
-    expect(testStrat.update).toHaveBeenNthCalledWith(1, candle1);
-    expect(testStrat.update).toHaveBeenLastCalledWith(candle5);
+    expect(testStrat.update).toHaveBeenNthCalledWith(1, candle1, mockProps);
+    expect(testStrat.update).toHaveBeenLastCalledWith(candle5, mockProps);
   });
 });

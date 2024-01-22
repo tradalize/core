@@ -1,6 +1,7 @@
 import {
   Broker,
   Candle,
+  MainframeProps,
   OpenPositionPayload,
   POSITION_DIRECTION,
 } from "../index.js";
@@ -28,7 +29,10 @@ export abstract class Strategy {
     return;
   }
 
-  public abstract update(candle: Candle): void | Promise<void>;
+  public abstract update(
+    candle: Candle,
+    props: MainframeProps
+  ): void | Promise<void>;
 
   public async checkOpenOnNext(candle: Candle): Promise<void> {
     if (!this.openOnNext) {
