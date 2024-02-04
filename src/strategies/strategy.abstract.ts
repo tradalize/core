@@ -12,7 +12,7 @@ export abstract class Strategy {
 
   protected closeOnNext: boolean;
 
-  constructor(private broker: Broker) {}
+  constructor(protected broker: Broker) {}
 
   public async onBeforeUpdate(candle: Candle): Promise<void> {
     if (this.broker?.currentPosition?.sl) {
