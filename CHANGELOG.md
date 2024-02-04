@@ -1,5 +1,16 @@
 # @tradalize/core
 
+## 0.3.0
+
+### Minor Changes
+
+- 38603be: SL/TP dynamic calculation
+
+### Patch Changes
+
+- f4e73cd: Broker to protected
+- c5dab6c: Providing context to the strategy
+
 ## 0.2.0
 
 ### Minor Changes
