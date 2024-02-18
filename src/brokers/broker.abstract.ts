@@ -19,6 +19,7 @@ export type Position = {
   tp?: number;
   closeTime?: number;
   closePrice?: number;
+  comment?: string;
 };
 
 export type OpenPositionPayload = Pick<
