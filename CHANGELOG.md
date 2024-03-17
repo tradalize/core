@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.4.0
+
+### Minor Changes
+
+- ee8d5d8: Adding arbitrage strategies
+
 ## 0.3.1
 
 ### Patch Changes
