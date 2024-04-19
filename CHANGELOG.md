@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.5.0
+
+### Minor Changes
+
+- c32028f: Adding FXOpen support
+
 ## 0.4.0
 
 ### Minor Changes
