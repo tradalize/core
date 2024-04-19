@@ -37,7 +37,7 @@ const timeDifByTimeframe = new Map<FxTimeframe, number>([
   ["H1", 3599999],
   ["H4", 14399999],
   ["D1", 86399999],
-  ["W1", 604799999]
+  ["W1", 604799999],
 ]);
 
 export class FXOpenClient {
@@ -91,8 +91,10 @@ export class FXOpenClient {
   }
 }
 
-
-function fxOpenBarToCandle(fxOpenBar: FXOpenBar, timeframe: FxTimeframe): Candle {
+function fxOpenBarToCandle(
+  fxOpenBar: FXOpenBar,
+  timeframe: FxTimeframe
+): Candle {
   return {
     openTime: fxOpenBar.Timestamp,
     open: fxOpenBar.Open,
