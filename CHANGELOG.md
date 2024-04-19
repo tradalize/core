@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.5.1
+
+### Patch Changes
+
+- eb153c7: Exports
+
 ## 0.5.0
 
 ### Minor Changes
