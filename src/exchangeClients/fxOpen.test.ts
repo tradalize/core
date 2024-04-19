@@ -1,6 +1,6 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 import { FXOpenClient } from "./fxOpen.js";
-import { AxiosInstance, AxiosStatic } from "axios";
+import { mockAxiosClient, getAxiosStatic } from "../mocks.js";
 
 const apiHost = "api-host";
 const apiId = "api-id";
@@ -8,12 +8,6 @@ const apiKey = "api-key";
 const apiSecret = "api-secret";
 
 const fxOpenClientParams = { apiHost, apiId, apiKey, apiSecret };
-
-const mockAxiosClient = { get: vi.fn() };
-
-const mockAxiosStatic = {
-  create: () => mockAxiosClient as unknown as AxiosInstance,
-} as AxiosStatic;
 
 const mockFxOpenBars = [
   {
@@ -37,7 +31,10 @@ const mockFxOpenBars = [
 describe("fxOpen client", () => {
   describe("getDataForPeriod", () => {
     test("should call FXOpen API with propper params and return transformed value", async () => {
-      const client = new FXOpenClient(fxOpenClientParams, mockAxiosStatic);
+      const client = new FXOpenClient(
+        fxOpenClientParams,
+        getAxiosStatic(mockAxiosClient)
+      );
 
       mockAxiosClient.get.mockResolvedValueOnce({
         data: { Bars: mockFxOpenBars },
