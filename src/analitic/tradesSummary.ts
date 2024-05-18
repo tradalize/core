@@ -78,7 +78,7 @@ export function getTradesSummary<T extends Position>(
     averageWin: averageWin,
     averageLoss: averageLoss,
     winrate: Number((winPnls.length / tradesCount).toFixed(2)),
-    profitFactor: Number(Math.abs(averageWin / averageLoss).toFixed(2)),
+    profitFactor: calcProfitFactor(winPnls, loosePnls),
     maxGain: Math.max(...winPnls),
     maxLoss: Math.min(...loosePnls),
     cumulativePnl,
@@ -116,4 +116,15 @@ function calcCumPnl(
   }
 
   return { balance, percentage: (balance - startBalance) / startBalance };
+}
+
+function calcProfitFactor(wins: number[], loses: number[]): number {
+  const grossProfit = wins.reduce((acc, trade) => acc + trade, 0);
+  const grossLoss = Math.abs(loses.reduce((acc, trade) => acc + trade, 0));
+
+  if (grossLoss === 0) {
+    return grossProfit > 0 ? Infinity : 0;
+  } else {
+    return grossProfit / grossLoss;
+  }
 }
