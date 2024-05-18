@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.5.3
+
+### Patch Changes
+
+- 2908539: Adding expectancy metric
+
 ## 0.5.2
 
 ### Patch Changes
