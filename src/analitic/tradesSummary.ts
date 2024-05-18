@@ -7,6 +7,7 @@ export type TradesSummary = {
   averageLoss: number;
   winrate: number;
   profitFactor: number;
+  expectancy: number;
   maxGain: number;
   maxLoss: number;
   cumulativePnl: number;
@@ -73,12 +74,14 @@ export function getTradesSummary<T extends Position>(
   const averageTimeInTrade = Number(average(timesInTrade).toFixed(0));
 
   const tradesCount = pnls.length;
+  const winrate = Number((winPnls.length / tradesCount).toFixed(2));
 
   return {
     averageWin: averageWin,
     averageLoss: averageLoss,
-    winrate: Number((winPnls.length / tradesCount).toFixed(2)),
+    winrate,
     profitFactor: calcProfitFactor(winPnls, loosePnls),
+    expectancy: calcExpectancy({ averageWin, averageLoss, winrate }),
     maxGain: Math.max(...winPnls),
     maxLoss: Math.min(...loosePnls),
     cumulativePnl,
@@ -125,6 +128,22 @@ function calcProfitFactor(wins: number[], loses: number[]): number {
   if (grossLoss === 0) {
     return grossProfit > 0 ? Infinity : 0;
   } else {
-    return grossProfit / grossLoss;
+    return Number((grossProfit / grossLoss).toFixed(2));
   }
+}
+
+type ExpectncyParams = {
+  averageWin: number;
+  averageLoss: number;
+  winrate: number;
+};
+
+function calcExpectancy({
+  averageWin,
+  averageLoss,
+  winrate,
+}: ExpectncyParams): number {
+  return Number(
+    (winrate * averageWin - (1 - winrate) * averageLoss).toFixed(2)
+  );
 }
