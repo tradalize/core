@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.5.4
+
+### Patch Changes
+
+- 8428009: Fix expectancy rounding
+
 ## 0.5.3
 
 ### Patch Changes
