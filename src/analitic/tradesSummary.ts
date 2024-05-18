@@ -143,7 +143,5 @@ function calcExpectancy({
   averageLoss,
   winrate,
 }: ExpectncyParams): number {
-  return Number(
-    (winrate * averageWin - (1 - winrate) * averageLoss).toFixed(2)
-  );
+  return winrate * averageWin - (1 - winrate) * averageLoss;
 }
