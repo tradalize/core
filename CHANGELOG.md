@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.5.2
+
+### Patch Changes
+
+- a4f0f75: Calc profit factor properly
+
 ## 0.5.1
 
 ### Patch Changes
