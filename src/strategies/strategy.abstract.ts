@@ -8,8 +8,17 @@ import {
 } from "../index.js";
 
 export abstract class Strategy {
+  /**
+   * Used for open the position "on next candle open"
+   * You can set `symbol`, `timeframe` and `direction` of position you want to open
+   * Additionally you can set `sl` - stop loss and `tp` - take profit options
+   * If you set it directly here it will override your dynamic calculations
+   */
   protected openOnNext: Omit<OpenPositionPayload, "price" | "openTime"> | null;
 
+  /**
+   * Used to close position "on next candle open"
+   */
   protected closeOnNext: boolean;
 
   constructor(protected broker: Broker) {}
@@ -30,6 +39,12 @@ export abstract class Strategy {
     return;
   }
 
+  /**
+   * Main method of each strategy. Receives new candle on each iteration
+   * You can set `openOnNext` and `closeOnNext` properties here to open and close positions on next candle
+   * Or you can open and close positions here directly, using `broker`, which is avaliable in `this` context
+   * But be carefull with "look ahead" bias
+   */
   public abstract update(
     candle: Candle,
     props: MainframeProps
@@ -43,11 +58,11 @@ export abstract class Strategy {
     const { openTime, open } = candle;
 
     await this.broker.openPosition({
-      ...this.openOnNext,
       time: openTime,
       price: open,
       sl: this.calcSl(open, this.openOnNext.direction),
       tp: this.calcTp(open, this.openOnNext.direction),
+      ...this.openOnNext,
     });
 
     this.openOnNext = null;
@@ -96,11 +111,19 @@ export abstract class Strategy {
     }
   }
 
+  /**
+   * Method for dynamic stop loss calculation
+   * May be usefull to calculate stop loss based on some indicatir value
+   */
   protected abstract calcSl(
     price: number,
     direction: PositionDirection
   ): number | undefined;
 
+  /**
+   * Method for dynamic calculation of take profit
+   * Same as `calcSl`, but for the take profit
+   */
   protected abstract calcTp(
     price: number,
     direction: PositionDirection
