@@ -141,17 +141,19 @@ describe("Strategy abstract", () => {
       expect(mockBroker.openPosition).not.toHaveBeenCalled();
     });
 
-    test("should call brokers openPosition method if openOnNext is set", async () => {
+    test("should call brokers openPosition method if openOnNext is set using provided sl/tp", async () => {
       const mockBroker = new MockBroker();
 
       const strat = new MockStrategy(mockBroker, {
         symbol,
         timeframe,
         direction: POSITION_DIRECTION.Long,
+        sl: 80,
+        tp: 200,
       });
 
-      strat.calcSl.mockReturnValue(80);
-      strat.calcTp.mockReturnValue(200);
+      strat.calcSl.mockReturnValue(10);
+      strat.calcTp.mockReturnValue(20);
 
       await strat.checkOpenOnNext(mockCandle);
 
@@ -163,6 +165,31 @@ describe("Strategy abstract", () => {
         time: mockCandle.openTime,
         sl: 80,
         tp: 200,
+      });
+    });
+
+    test("should call brokers openPosition method if openOnNext is set using dynamic sl/tp calcutaion", async () => {
+      const mockBroker = new MockBroker();
+
+      const strat = new MockStrategy(mockBroker, {
+        symbol,
+        timeframe,
+        direction: POSITION_DIRECTION.Long,
+      });
+
+      strat.calcSl.mockReturnValue(90);
+      strat.calcTp.mockReturnValue(110);
+
+      await strat.checkOpenOnNext(mockCandle);
+
+      expect(mockBroker.openPosition).toHaveBeenCalledWith({
+        symbol,
+        timeframe,
+        direction: 1,
+        price: mockCandle.open,
+        time: mockCandle.openTime,
+        sl: 90,
+        tp: 110,
       });
     });
   });

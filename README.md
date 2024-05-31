@@ -38,9 +38,8 @@ import { Datafeed } from "@tradalize/core";
 
 class MyCustomDatafeed extends Datafeed {
   // A symbol/ticker to load
-  symbol: string;
+  symbol: string; // A Timeframe wo work with (1d, 1h)
 
-  // A Timeframe wo work with (1d, 1h)
   timeframe: Timeframe;
 
   public async loadNextChunk(): Promise<Candle[]> {
@@ -49,7 +48,7 @@ class MyCustomDatafeed extends Datafeed {
 }
 ```
 
-That's it. After that, this `Datafeed` will emulate the market behavior and provide a new `Candle` one by one to your strategy. When it reaches the end of the list, it will try to load a new chunk of data by calling the `loadNextChunk` method. If this method returns an empty array, backtesting will stop. So you can control on which part of your data you want to run your backtests.
+That's it. After that, this `Datafeed` will emulate the market behavior and provide a new `Candle` one by one to your strategy. When it reaches the end of the list, it will try to load a new chunk of data by calling the `loadNextChunk` method. If this method returns an empty array, backtesting will stop. So you can control which part of your data you want to run your backtests on.
 
 ### Broker
 
@@ -75,24 +74,35 @@ class MyBroker extends Broker {
 
 ### Strategy
 
-`Strategy` is the most valuable part of any backtest. Here you gone implement your logic of making trading decision.
+`Strategy` is the most valuable part of any backtest. Here you will implement your logic for making trading decisions.
+
+There is a few `Strategy` methods you have to implement
+
+### `update`
+
+`update` - is an obligatory method to implement to make your strategy work.
+This method will receive a new candle one by one until they end
 
 ```ts
 import { Strategy, POSITION_DIRECTION } from "@tradalize/core";
 
 class MyStrategy extends Strategy {
-  public update(candle: Candle): void | Promise<void> {
-    // update - is the only method you need to implement to make your strategy work
-    // this method will receive a new candle one by one until they ends
+  public update(candle: Candle, props: MainframeProps): void | Promise<void> {
+    const dayOfTheWeek = new Date(candle.openTime).getDay(); // Some trading condition
 
-    // Here's a sample strategy
-    const dayOfTheWeek = new Date(candle.openTime).getDay();
-
-    // Some trading condition
     if (dayOfTheWeek === 0) {
-      // To open a trade you need to set this internal property to the position direction you need
-      // Trade will be executed on the next candle open
-      this.openOnNext = POSITION_DIRECTION.Long;
+      /**
+       * To open a trade you need to set this internal property called `openOnNext`
+       * Trade will be executed on the next candle open
+       * You have to provide a symbol, timeframe, and direction of the opening position
+       * Additionally you can provide `sl` - stop loss and `tp` - take profit values here
+       * Or you can implement `calcSl` and `calcTp` methods to calculate them dynamically
+       */
+      this.openOnNext = {
+        symbol: props.symbol,
+        timeframe: props.timeframe,
+        direction: POSITION_DIRECTION.Long,
+      };
     }
 
     if (dayOfTheWeek === 5) {
@@ -102,6 +112,40 @@ class MyStrategy extends Strategy {
   }
 }
 ```
+
+### `calcSl`
+
+`calcSl` - is a method to dynamically calculate the stop loss of your position. You can calculate it in your `update` method and provide `sl` param to `openOnNext` property, so this is just a syntax sugar to make this calculation more unified across various strategies.
+
+If you don't need stop loss or don't need a dynamic calculation of it - you can simply return `undefined` from it
+
+```ts
+class MyStrategy extends Strategy {
+  protected calcSl() {
+    return;
+  }
+}
+```
+
+Example of dynamic calculation using indicator value from the strategy
+
+```ts
+class MyStrategy extends Strategy {
+  protected calcSl(
+    price: number,
+    direction: PositionDirection
+  ): number | undefined {
+    return price - this.atrValue * SL_ATR_RATIO * direction;
+  }
+}
+```
+
+> [!IMPORTANT]
+> If you provide `sl` or `tp` to `openOnNext` property - those values will override your dynamic calculation from `calcSl` and `calcTp`
+
+### `calcTp`
+
+Same as `calcSl`, but for the take profit. See examples above
 
 ### Mainframe
 
@@ -122,6 +166,6 @@ That's it :)
 
 ## Afterwords
 
-This is only essential functionality. This guide does not cover how to work with analysis, analyze your trades, and strategy performance. It will be added soon.
+This is only essential functionality. This guide does not cover how to work with analysis, analyze your trades, and strategy performance. It will be added later on.
 
-As I said before - this is only a library. But I will add a starter app template soon to provide more "framework-ish" developer experience for the backtesting
+As I said before - this is only a library. But I will add a starter app template to provide more "framework-ish" developer experience for the backtesting
