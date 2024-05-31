@@ -1,4 +1,4 @@
-import { AxiosError, AxiosInstance, AxiosStatic } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosStatic } from "axios";
 import type { Candle } from "../index.js";
 import { POSITION_DIRECTION } from "../brokers/broker.abstract.js";
 import { ObjectValues } from "../utils/utility.types.js";
@@ -177,3 +177,36 @@ function fxOpenPositionToExchangePosition(
     profit: Profit,
   };
 }
+
+const testDemoClient = new FXOpenClient(
+  {
+    apiHost: "https://ttlivewebapi.fxopen.net:8443",
+    apiId: "37f28ba0-7a91-4bf3-afac-41df7fe747f1",
+    apiKey: "KJd6fFPCJKn6rxKB",
+    apiSecret:
+      "acEzQBbRD4sH7adwCFPEdR98zKrmdzJFhqAc7ryEJW62ydGZy4PND7hrdF9dhYNd",
+  },
+  axios
+);
+
+const testLiveClient = new FXOpenClient(
+  {
+    apiHost: "https://ttlivewebapi.fxopen.net:8443",
+    apiId: "333be997-0bd5-4c30-98a0-1aadc17a6adf",
+    apiKey: "DM445HnYZGmrPqqg",
+    apiSecret:
+      "bGEWkWberQ7z5cMyQggKhKn7MSTW4DEp4dASrCqN2eb7s7mc83DmsFSAsGgCbqkY",
+  },
+  axios
+);
+
+try {
+  const data = await testLiveClient.getAccountInfo();
+
+  console.info(data);
+} catch (error) {
+  console.error(error);
+  // console.log(error.response.data);
+}
+
+process.exit(0);
