@@ -90,4 +90,26 @@ describe("Trades summary", () => {
       averageTimeInTradeLabel: "1.50 minutes",
     });
   });
+
+  test("should not throw error when provide empty array", () => {
+    const result = getTradesSummary([]);
+
+    expect(result).toStrictEqual({
+      averageWin: 0,
+      averageLoss: 0,
+      winrate: 0,
+      profitFactor: 0,
+      expectancy: 0,
+      maxGain: 0,
+      maxLoss: 0,
+      cumulativePnl: 1000,
+      profitResult: 0,
+      tradesCount: 0,
+      winsCount: 0,
+      longsCount: 0,
+      shortsCount: 0,
+      averageTimeInTrade: 0,
+      averageTimeInTradeLabel: "0",
+    });
+  });
 });

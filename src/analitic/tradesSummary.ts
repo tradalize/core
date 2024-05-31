@@ -1,5 +1,5 @@
 import { POSITION_DIRECTION, Position } from "../brokers/broker.abstract.js";
-import { average } from "../utils/math.js";
+import { average, toFinite } from "../utils/math.js";
 import { milisendsToDuration } from "../utils/timeFormatters.js";
 
 export type TradesSummary = {
@@ -74,7 +74,7 @@ export function getTradesSummary<T extends Position>(
   const averageTimeInTrade = Number(average(timesInTrade).toFixed(0));
 
   const tradesCount = pnls.length;
-  const winrate = Number((winPnls.length / tradesCount).toFixed(2));
+  const winrate = Number(toFinite(winPnls.length / tradesCount).toFixed(2));
 
   return {
     averageWin: averageWin,
@@ -82,8 +82,8 @@ export function getTradesSummary<T extends Position>(
     winrate,
     profitFactor: calcProfitFactor(winPnls, loosePnls),
     expectancy: calcExpectancy({ averageWin, averageLoss, winrate }),
-    maxGain: Math.max(...winPnls),
-    maxLoss: Math.min(...loosePnls),
+    maxGain: toFinite(Math.max(...winPnls)),
+    maxLoss: toFinite(Math.min(...loosePnls)),
     cumulativePnl,
     profitResult,
     tradesCount,
@@ -143,5 +143,7 @@ function calcExpectancy({
   averageLoss,
   winrate,
 }: ExpectncyParams): number {
-  return winrate * averageWin - (1 - winrate) * averageLoss;
+  const expectancy = winrate * averageWin - (1 - winrate) * averageLoss;
+
+  return toFinite(expectancy);
 }

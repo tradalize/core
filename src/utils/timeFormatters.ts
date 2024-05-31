@@ -5,6 +5,10 @@ const HOUR_MINUTES = 60;
 const DAY_HOURS = 24;
 
 export function milisendsToDuration(timestamp: number) {
+  if (timestamp === 0) {
+    return "0";
+  }
+
   const minutes = timestamp / MINUTE_MILISECONDS;
 
   if (minutes < HOUR_MINUTES) {
