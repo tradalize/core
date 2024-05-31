@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.5.5
+
+### Patch Changes
+
+- 5032a4e: Fixing getTradesSummary error
+
 ## 0.5.4
 
 ### Patch Changes
