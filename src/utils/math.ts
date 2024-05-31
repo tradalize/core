@@ -7,5 +7,11 @@ export function toPercent(number: number): string {
 }
 
 export function average(numbers: number[]) {
-  return numbers.reduce(add) / numbers.length;
+  const result = numbers.reduce(add, 0) / numbers.length;
+
+  return toFinite(result);
+}
+
+export function toFinite(number: number) {
+  return isFinite(number) ? number : 0;
 }
