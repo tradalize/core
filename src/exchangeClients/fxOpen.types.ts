@@ -142,7 +142,7 @@ export type FXOpenTrade = {
   Created: number;
   Expired?: number;
   Modified?: number;
-  Filled?: number;
+  Filled?: number; // Filled timestamp
   PositionCreated?: number;
   Comment: string;
   ClientApp: string;
@@ -153,4 +153,37 @@ export type FXOpenTrade = {
   TriggerType: FXOpenContingentOrderTriggerTypes;
   TriggerTime?: number;
   OrderIdTriggeredBy?: number;
+};
+
+export type CreateFXOpenTradePayload = {
+  ClientId?: string; // Client trade Id
+  Type: FXOpenOrderTypes; // Type of trade. Possible values: "Market", "Limit", "Stop", "StopLimit"
+  Side: FXOpenOrderSides; // Side of trade. Possible values: "Buy", "Sell"
+  Symbol: string; // Trade symbol (e.g. "EURUSD")
+  Price?: number; // Price of the "Limit" trades (for Market trades price field is ignored)
+  StopPrice?: number; // Price of the "Stop" trades (for Market trades price field is ignored)
+  Amount: number; // Trade amount
+  Slippage?: number; // Slippage. Possible values: 0..1
+  StopLoss?: number; // Stop loss price
+  TakeProfit?: number; // Take profit price
+  Expired?: number; // Expiration date and time (milliseconds) for pending and contingent trades ("Limit", "Stop", "StopLimit")
+  ImmediateOrCancel?: boolean; // "Immediate or cancel" flag (works only for "Limit" and "StopLimit" trades)
+  MarketWithSlippage?: boolean; // "MarketWithSlippage" flag (works only for "Limit" and "StopLimit" trades)
+  OneCancelsTheOther?: boolean; // "OneCancelsTheOther" flag (works only for a pair of trades "Limit-Stop" or "Stop-Stop")
+  OcoEqualAmount?: boolean; // "OcoEqualAmount" flag means taking the amount from the other order otherwise from the request (works only with "OneCancelsTheOther")
+  RelatedTradeId?: string; // Related Trade Id is used when option OneCancelsTheOther is set
+  ContingentOrder?: boolean; // "ContingentOrder" flag
+  TriggerType?: FXOpenContingentOrderTriggerTypes; // Trigger Type is used when order is contingent. Possible values: "OnTime", "OnPendingOrderExpired", "OnPendingOrderPartiallyFilled"
+  TriggerTime?: number; // Trigger Time is used when order is contingent and Trigger Type is "OnTime"
+  OrderIdTriggeredBy?: string; // OrderIdTriggeredBy is used when order is contingent and Trigger Type is "OnPendingOrderExpired"or "OnPendingOrderPartiallyFilled"
+  Comment?: string; // Client comment
+};
+
+export type CancelFXOpenTradeType = "Cancel" | "Close" | "CloseBy";
+
+export type CancelFXOpenTradePayload = {
+  Type: CancelFXOpenTradeType; // Delete trade operation type. Possible values: Cancel, Close, CloseBy.
+  Id: number; // Trade Id to cancel or close
+  Amount?: number; // Trade close amount (only for Close operation)
+  ById?: number; // Close by trade Id (only for CloseBy operation)
 };

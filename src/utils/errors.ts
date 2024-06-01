@@ -4,5 +4,5 @@ export function handleNotFoundError(error: AxiosError) {
   if (error.status === HttpStatusCode.NotFound) {
     return;
   }
-  throw error;
+  throw new Error(`${error.message} ${error.response.data ?? ""}`);
 }

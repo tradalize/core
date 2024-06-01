@@ -1,11 +1,16 @@
-import axios, { AxiosError, AxiosInstance, AxiosStatic } from "axios";
-import type { Candle } from "../index.js";
+import { AxiosError, AxiosInstance, AxiosStatic } from "axios";
+import { createHmac } from "node:crypto";
+import type { Candle, ExchangeTrade } from "../index.js";
 import { POSITION_DIRECTION } from "../brokers/broker.abstract.js";
 import { ObjectValues } from "../utils/utility.types.js";
 import {
+  CancelFXOpenTradePayload,
+  CancelFXOpenTradeType,
+  CreateFXOpenTradePayload,
   FXOpenAccountInfo,
   FXOpenBar,
   FXOpenPosition,
+  FXOpenTrade,
 } from "./fxOpen.types.js";
 import { ExchangePosition } from "./types.js";
 import { handleNotFoundError } from "../utils/errors.js";
@@ -29,8 +34,6 @@ export const FX_TIMEFRAME = {
 
 export type FxTimeframe = ObjectValues<typeof FX_TIMEFRAME>;
 
-const API_PREFIX = "api/v2";
-
 export class FXOpenClient {
   client: AxiosInstance;
 
@@ -38,17 +41,26 @@ export class FXOpenClient {
     { apiHost, apiId, apiKey, apiSecret }: FXOpenProps,
     axios: AxiosStatic
   ) {
-    const authHeader = this.generateBasicAuthHeader({
-      apiId,
-      apiKey,
-      apiSecret,
-    });
-
     this.client = axios.create({
       baseURL: apiHost,
-      headers: {
-        Authorization: authHeader,
-      },
+    });
+
+    this.client.interceptors.request.use((config) => {
+      const hmac = createHmac("sha256", apiSecret);
+      const timestamp = Date.now();
+
+      const signature = hmac
+        .update(
+          `${timestamp}${apiId}${apiKey}${config.method.toUpperCase()}${config.baseURL}${config.url}${config.data ? JSON.stringify(config.data) : ""}`
+        )
+        .digest("base64");
+
+      config.headers.set(
+        "Authorization",
+        `HMAC ${apiId}:${apiKey}:${timestamp}:${signature}`
+      );
+
+      return config;
     });
   }
 
@@ -65,7 +77,7 @@ export class FXOpenClient {
     );
 
     const { data } = await this.client.get<{ Bars: FXOpenBar[] }>(
-      `${API_PREFIX}/quotehistory/${symbol}/${timeframe}/bars/ask?timestamp=${startFrom}&count=${limit}`
+      `/quotehistory/${symbol}/${timeframe}/bars/ask?timestamp=${startFrom}&count=${limit}`
     );
 
     console.info(`Loaded ${data.Bars.length} items`);
@@ -74,18 +86,14 @@ export class FXOpenClient {
   }
 
   public async getOpenPositions(): Promise<ExchangePosition[]> {
-    const { data } = await this.client.get<FXOpenPosition[]>(
-      `${API_PREFIX}/position`
-    );
+    const { data } = await this.client.get<FXOpenPosition[]>("/position");
 
     return data.map(fxOpenPositionToExchangePosition);
   }
 
   public async getPosition(id: number): Promise<ExchangePosition | void> {
     try {
-      const { data } = await this.client.get<FXOpenPosition>(
-        `${API_PREFIX}/position/${id}`
-      );
+      const { data } = await this.client.get<FXOpenPosition>(`/position/${id}`);
 
       return fxOpenPositionToExchangePosition(data);
     } catch (error) {
@@ -94,9 +102,7 @@ export class FXOpenClient {
   }
 
   public async getAccountInfo() {
-    const { data } = await this.client.get<FXOpenAccountInfo>(
-      `${API_PREFIX}/account`
-    );
+    const { data } = await this.client.get<FXOpenAccountInfo>("/account");
 
     return {
       id: data.Id,
@@ -105,12 +111,31 @@ export class FXOpenClient {
     };
   }
 
-  private generateBasicAuthHeader({
-    apiId,
-    apiKey,
-    apiSecret,
-  }: Pick<FXOpenProps, "apiId" | "apiKey" | "apiSecret">): string {
-    return `Basic ${apiId}:${apiKey}:${apiSecret}`;
+  public async createTrade(
+    payload: CreateFXOpenTradePayload
+  ): Promise<ExchangeTrade | void> {
+    try {
+      const { data } = await this.client.post<FXOpenTrade>("/trade", payload);
+
+      return fxOpenTradeToExchangeTrade(data);
+    } catch (error) {
+      return handleNotFoundError(error as AxiosError);
+    }
+  }
+
+  public async cancelTrade(
+    payload: CancelFXOpenTradePayload
+  ): Promise<ExchangeTrade | void> {
+    try {
+      const { data } = await this.client.delete<{
+        Type: CancelFXOpenTradeType;
+        Trade: FXOpenTrade;
+      }>(`/trade?trade.type=${payload.Type}&trade.id=${payload.Id}`);
+
+      return fxOpenTradeToExchangeTrade(data.Trade);
+    } catch (error) {
+      return handleNotFoundError(error);
+    }
   }
 }
 
@@ -151,7 +176,7 @@ function fxOpenPositionToExchangePosition(
     ShortPrice,
     Commission,
     Profit,
-    Created,
+    Modified,
   } = fxPosition;
 
   const direction = LongAmount
@@ -170,43 +195,36 @@ function fxOpenPositionToExchangePosition(
   return {
     id: Id,
     symbol: Symbol,
-    openTime: Created,
+    openTime: Modified,
     openPrice,
     direction,
+    ammount: LongAmount ? LongAmount : ShortAmount ?? 0,
     fee: Commission,
     profit: Profit,
   };
 }
 
-const testDemoClient = new FXOpenClient(
-  {
-    apiHost: "https://ttlivewebapi.fxopen.net:8443",
-    apiId: "37f28ba0-7a91-4bf3-afac-41df7fe747f1",
-    apiKey: "KJd6fFPCJKn6rxKB",
-    apiSecret:
-      "acEzQBbRD4sH7adwCFPEdR98zKrmdzJFhqAc7ryEJW62ydGZy4PND7hrdF9dhYNd",
-  },
-  axios
-);
+function fxOpenTradeToExchangeTrade({
+  Id,
+  Symbol,
+  Side,
+  Price,
+  Filled,
+  FilledAmount,
+}: FXOpenTrade): ExchangeTrade {
+  const direction =
+    Side === "Buy"
+      ? POSITION_DIRECTION.Long
+      : Side === "Sell"
+        ? POSITION_DIRECTION.Short
+        : undefined;
 
-const testLiveClient = new FXOpenClient(
-  {
-    apiHost: "https://ttlivewebapi.fxopen.net:8443",
-    apiId: "333be997-0bd5-4c30-98a0-1aadc17a6adf",
-    apiKey: "DM445HnYZGmrPqqg",
-    apiSecret:
-      "bGEWkWberQ7z5cMyQggKhKn7MSTW4DEp4dASrCqN2eb7s7mc83DmsFSAsGgCbqkY",
-  },
-  axios
-);
-
-try {
-  const data = await testLiveClient.getAccountInfo();
-
-  console.info(data);
-} catch (error) {
-  console.error(error);
-  // console.log(error.response.data);
+  return {
+    id: Id,
+    symbol: Symbol,
+    direction,
+    openPrice: Price,
+    openTime: Filled,
+    ammount: FilledAmount,
+  };
 }
-
-process.exit(0);

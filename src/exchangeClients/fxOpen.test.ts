@@ -1,8 +1,15 @@
 import { describe, expect, test } from "vitest";
 import { FXOpenClient } from "./fxOpen.js";
 import { mockAxiosClient, getAxiosStatic } from "../mocks.js";
-import { FXOpenBar, FXOpenPosition } from "./fxOpen.types.js";
+import {
+  CancelFXOpenTradePayload,
+  CreateFXOpenTradePayload,
+  FXOpenBar,
+  FXOpenPosition,
+  FXOpenTrade,
+} from "./fxOpen.types.js";
 import { HttpStatusCode } from "axios";
+import { POSITION_DIRECTION } from "../brokers/broker.abstract.js";
 
 const apiHost = "api-host";
 const apiId = "api-id";
@@ -30,26 +37,33 @@ const mockFxOpenBars: FXOpenBar[] = [
   },
 ];
 
-const mockFxOpenPositions: FXOpenPosition[] = [
-  {
-    Id: 0,
-    Symbol: "EURUSD",
-    LongAmount: 1,
-    LongPrice: 0,
-    ShortAmount: 0,
-    ShortPrice: 0,
-    Commission: 0,
-    AgentCommission: 0,
-    Swap: 0,
-    Modified: 1713807621839,
-    Margin: 0,
-    Profit: 0,
-    CurrentBestAsk: 0,
-    CurrentBestBid: 0,
-    TransferringCoefficient: 0,
-    Created: 1713807621839,
-  },
-];
+const mockFxOpenPosition: FXOpenPosition = {
+  Id: 0,
+  Symbol: "EURUSD",
+  LongAmount: 1,
+  LongPrice: 0,
+  ShortAmount: 0,
+  ShortPrice: 0,
+  Commission: 0.1,
+  AgentCommission: 0,
+  Swap: 0,
+  Modified: 1713807621839,
+  Margin: 0,
+  Profit: 0,
+  CurrentBestAsk: 0,
+  CurrentBestBid: 0,
+  TransferringCoefficient: 0,
+  Created: 1713807621839,
+};
+
+const mockFxOpenTrade: Partial<FXOpenTrade> = {
+  Id: 1,
+  Side: "Buy",
+  Symbol: "EURUSD",
+  Price: 100,
+  Filled: 123,
+  FilledAmount: 1,
+};
 
 describe("fxOpen client", () => {
   describe("getDataForPeriod", () => {
@@ -76,7 +90,7 @@ describe("fxOpen client", () => {
       );
 
       expect(mockAxiosClient.get).toHaveBeenCalledWith(
-        `api/v2/quotehistory/${symbol}/${timeframe}/bars/ask?timestamp=${startFrom}&count=${limit}`
+        `/quotehistory/${symbol}/${timeframe}/bars/ask?timestamp=${startFrom}&count=${limit}`
       );
       expect(result).toStrictEqual([
         {
@@ -109,21 +123,22 @@ describe("fxOpen client", () => {
       );
 
       mockAxiosClient.get.mockResolvedValueOnce({
-        data: mockFxOpenPositions,
+        data: [mockFxOpenPosition],
       });
 
       const result = await client.getOpenPositions();
 
-      expect(mockAxiosClient.get).toHaveBeenCalledWith("api/v2/position");
+      expect(mockAxiosClient.get).toHaveBeenCalledWith("/position");
       expect(result).toStrictEqual([
         {
-          id: 0,
-          symbol: "EURUSD",
-          openTime: 1713807621839,
-          openPrice: 0,
-          direction: 1,
-          fee: 0,
-          profit: 0,
+          id: mockFxOpenPosition.Id,
+          symbol: mockFxOpenPosition.Symbol,
+          openTime: mockFxOpenPosition.Modified,
+          openPrice: mockFxOpenPosition.LongPrice,
+          direction: POSITION_DIRECTION.Long,
+          fee: mockFxOpenPosition.Commission,
+          profit: mockFxOpenPosition.Profit,
+          ammount: mockFxOpenPosition.LongAmount,
         },
       ]);
     });
@@ -137,19 +152,20 @@ describe("fxOpen client", () => {
       );
 
       mockAxiosClient.get.mockResolvedValueOnce({
-        data: mockFxOpenPositions[0],
+        data: mockFxOpenPosition,
       });
 
       const result = await client.getPosition(0);
 
       expect(result).toStrictEqual({
-        direction: 1,
-        fee: 0,
-        id: 0,
-        openPrice: 0,
-        openTime: 1713807621839,
-        profit: 0,
-        symbol: "EURUSD",
+        id: mockFxOpenPosition.Id,
+        symbol: mockFxOpenPosition.Symbol,
+        openTime: mockFxOpenPosition.Modified,
+        openPrice: mockFxOpenPosition.LongPrice,
+        direction: POSITION_DIRECTION.Long,
+        fee: mockFxOpenPosition.Commission,
+        profit: mockFxOpenPosition.Profit,
+        ammount: mockFxOpenPosition.LongAmount,
       });
     });
 
@@ -182,10 +198,75 @@ describe("fxOpen client", () => {
 
       const result = await client.getAccountInfo();
 
+      expect(mockAxiosClient.get).toBeCalledWith("/account");
       expect(result).toStrictEqual({
         id: 0,
         leverage: 10,
         balance: 10,
+      });
+    });
+  });
+
+  describe("createTrade", () => {
+    test("should create trade and return it", async () => {
+      const client = new FXOpenClient(
+        fxOpenClientParams,
+        getAxiosStatic(mockAxiosClient)
+      );
+
+      mockAxiosClient.post.mockResolvedValueOnce({
+        data: mockFxOpenTrade,
+      });
+
+      const payload: CreateFXOpenTradePayload = {
+        Side: "Buy",
+        Symbol: "EURUSD",
+        Type: "Market",
+        Amount: 0.1,
+      };
+
+      const result = await client.createTrade(payload);
+
+      expect(mockAxiosClient.post).toBeCalledWith("/trade", payload);
+      expect(result).toStrictEqual({
+        id: mockFxOpenTrade.Id,
+        ammount: mockFxOpenTrade.FilledAmount,
+        direction: POSITION_DIRECTION.Long,
+        openPrice: mockFxOpenTrade.Price,
+        openTime: mockFxOpenTrade.Filled,
+        symbol: mockFxOpenTrade.Symbol,
+      });
+    });
+  });
+
+  describe("cancelTrade", () => {
+    test("should cancel the given trade", async () => {
+      const client = new FXOpenClient(
+        fxOpenClientParams,
+        getAxiosStatic(mockAxiosClient)
+      );
+
+      mockAxiosClient.delete.mockResolvedValueOnce({
+        data: { Trade: mockFxOpenTrade },
+      });
+
+      const payload: CancelFXOpenTradePayload = {
+        Type: "Cancel",
+        Id: 123,
+      };
+
+      const result = await client.cancelTrade(payload);
+
+      expect(mockAxiosClient.delete).toBeCalledWith(
+        `/trade?trade.type=${payload.Type}&trade.id=${payload.Id}`
+      );
+      expect(result).toStrictEqual({
+        id: mockFxOpenTrade.Id,
+        ammount: mockFxOpenTrade.FilledAmount,
+        direction: POSITION_DIRECTION.Long,
+        openPrice: mockFxOpenTrade.Price,
+        openTime: mockFxOpenTrade.Filled,
+        symbol: mockFxOpenTrade.Symbol,
       });
     });
   });
