@@ -34,6 +34,13 @@ export const FX_TIMEFRAME = {
 
 export type FxTimeframe = ObjectValues<typeof FX_TIMEFRAME>;
 
+/**
+ * CLient for the interaction with FX Open broket via TickerTrader API
+ * @see https://fxopen.com
+ * @see https://ttlivewebapi.fxopen.net:8443/api/doc/index Swager
+ * @host https://ttlivewebapi.fxopen.net:8443/api/v2 Live API
+ * @host https://ttdemowebapi.fxopen.net:8443/api/v2 Demo API
+ */
 export class FXOpenClient {
   client: AxiosInstance;
 
@@ -64,6 +71,9 @@ export class FXOpenClient {
     });
   }
 
+  /**
+   * Get candles for the period
+   */
   public async getDataForPeriod(
     symbol: string,
     timeframe: FxTimeframe,
@@ -85,12 +95,18 @@ export class FXOpenClient {
     return data.Bars.map((bar) => fxOpenBarToCandle(bar, timeframe));
   }
 
+  /**
+   * Get list of the open positions
+   */
   public async getOpenPositions(): Promise<ExchangePosition[]> {
     const { data } = await this.client.get<FXOpenPosition[]>("/position");
 
     return data.map(fxOpenPositionToExchangePosition);
   }
 
+  /**
+   * Get position by ID
+   */
   public async getPosition(id: number): Promise<ExchangePosition | void> {
     try {
       const { data } = await this.client.get<FXOpenPosition>(`/position/${id}`);
@@ -101,6 +117,9 @@ export class FXOpenClient {
     }
   }
 
+  /**
+   * Get account info
+   */
   public async getAccountInfo() {
     const { data } = await this.client.get<FXOpenAccountInfo>("/account");
 
@@ -111,6 +130,11 @@ export class FXOpenClient {
     };
   }
 
+  /**
+   * Create trade
+   * Market trades will be executed immiedtelly
+   * Note that your position ID will not be equal to the order ID that creates this position
+   */
   public async createTrade(
     payload: CreateFXOpenTradePayload
   ): Promise<ExchangeTrade | void> {
@@ -123,6 +147,10 @@ export class FXOpenClient {
     }
   }
 
+  /**
+   * Cancel trade by ID
+   * Can be usefull with limit orders
+   */
   public async cancelTrade(
     payload: CancelFXOpenTradePayload
   ): Promise<ExchangeTrade | void> {
