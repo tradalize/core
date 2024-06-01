@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.6.0
+
+### Minor Changes
+
+- a7a80b7: Adding FX Open exchange client
+
 ## 0.5.6
 
 ### Patch Changes
