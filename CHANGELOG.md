@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.6.1
+
+### Patch Changes
+
+- 751b7a5: Types improvment
+
 ## 0.6.0
 
 ### Minor Changes
