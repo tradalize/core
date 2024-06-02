@@ -106,10 +106,15 @@ export class FXOpenClient {
 
   /**
    * Get position by ID
+   * @param idOrSymbol Id of position or Symbol (EURUSD etc.)
    */
-  public async getPosition(id: number): Promise<ExchangePosition | void> {
+  public async getPosition(
+    idOrSymbol: number | string
+  ): Promise<ExchangePosition | void> {
     try {
-      const { data } = await this.client.get<FXOpenPosition>(`/position/${id}`);
+      const { data } = await this.client.get<FXOpenPosition>(
+        `/position/${idOrSymbol}`
+      );
 
       return fxOpenPositionToExchangePosition(data);
     } catch (error) {

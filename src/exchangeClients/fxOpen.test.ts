@@ -176,7 +176,7 @@ describe("fxOpen client", () => {
       );
 
       mockAxiosClient.get.mockRejectedValueOnce({
-        status: HttpStatusCode.NotFound,
+        response: { status: HttpStatusCode.NotFound },
       });
 
       const result = await client.getPosition(0);
