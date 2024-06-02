@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.6.2
+
+### Patch Changes
+
+- d1c6b57: Error handler hotfix
+
 ## 0.6.1
 
 ### Patch Changes
