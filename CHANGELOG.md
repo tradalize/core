@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.6.3
+
+### Patch Changes
+
+- 042a579: Adding FXOpenPublic client
+
 ## 0.6.2
 
 ### Patch Changes
