@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { FXOpenClient } from "./fxOpen.js";
-import { mockAxiosClient, getAxiosStatic } from "../mocks.js";
+import { mockAxiosClient, getAxiosStatic } from "../../mocks.js";
 import {
   CancelFXOpenTradePayload,
   CreateFXOpenTradePayload,
@@ -9,7 +9,7 @@ import {
   FXOpenTrade,
 } from "./fxOpen.types.js";
 import { HttpStatusCode } from "axios";
-import { POSITION_DIRECTION } from "../brokers/broker.abstract.js";
+import { POSITION_DIRECTION } from "../../brokers/broker.abstract.js";
 
 const apiHost = "api-host";
 const apiId = "api-id";

@@ -1,3 +1,24 @@
+import { ObjectValues } from "../../utils/utility.types.js";
+
+export type FXOpenProps = {
+  apiHost: string;
+  apiId: string;
+  apiKey: string;
+  apiSecret: string;
+};
+
+export const FX_TIMEFRAME = {
+  OneMinute: "M1",
+  FiveMinutes: "M5",
+  FifteenMinutes: "M15",
+  OneHour: "H1",
+  FourHours: "H4",
+  OneDay: "D1",
+  OneWeek: "W1",
+} as const;
+
+export type FxTimeframe = ObjectValues<typeof FX_TIMEFRAME>;
+
 export type FXOpenPosition = {
   Id: number;
   Symbol: string;

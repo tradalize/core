@@ -3,7 +3,7 @@ import {
   FXOpenProps,
   FX_TIMEFRAME,
   FxTimeframe,
-} from "../exchangeClients/fxOpen.js";
+} from "../exchangeClients/fxOpen/index.js";
 import type { AxiosStatic } from "axios";
 import { MainframeProps } from "../mainframe.js";
 import { Candle, Datafeed, Timeframe, TIMEFRAME } from "./datafeed.abstract.js";

@@ -1,8 +1,6 @@
 import { AxiosError, AxiosInstance, AxiosStatic } from "axios";
 import { createHmac } from "node:crypto";
-import type { Candle, ExchangeTrade } from "../index.js";
-import { POSITION_DIRECTION } from "../brokers/broker.abstract.js";
-import { ObjectValues } from "../utils/utility.types.js";
+import type { ExchangeTrade } from "../../index.js";
 import {
   CancelFXOpenTradePayload,
   CancelFXOpenTradeType,
@@ -12,30 +10,18 @@ import {
   FXOpenPosition,
   FXOpenTrade,
 } from "./fxOpen.types.js";
-import { ExchangePosition } from "./types.js";
-import { handleNotFoundError } from "../utils/errors.js";
-
-export type FXOpenProps = {
-  apiHost: string;
-  apiId: string;
-  apiKey: string;
-  apiSecret: string;
-};
-
-export const FX_TIMEFRAME = {
-  OneMinute: "M1",
-  FiveMinutes: "M5",
-  FifteenMinutes: "M15",
-  OneHour: "H1",
-  FourHours: "H4",
-  OneDay: "D1",
-  OneWeek: "W1",
-} as const;
-
-export type FxTimeframe = ObjectValues<typeof FX_TIMEFRAME>;
+import { ExchangePosition } from "../types.js";
+import { handleNotFoundError } from "../../utils/errors.js";
+import type { FXOpenProps, FxTimeframe } from "./fxOpen.types.js";
+import {
+  fxOpenBarToCandle,
+  fxOpenPositionToExchangePosition,
+  fxOpenTradeToExchangeTrade,
+} from "./helpers.js";
 
 /**
  * CLient for the interaction with FX Open broket via TickerTrader API
+ * It use node:crypto module, thus it will work only in the Node/Bun environment
  * @see https://fxopen.com
  * @see https://ttlivewebapi.fxopen.net:8443/api/doc/index Swager
  * @host https://ttlivewebapi.fxopen.net:8443/api/v2 Live API
@@ -170,94 +156,4 @@ export class FXOpenClient {
       return handleNotFoundError(error);
     }
   }
-}
-
-const timeDifByTimeframe = new Map<FxTimeframe, number>([
-  ["M1", 59999],
-  ["M5", 299999],
-  ["M15", 899999],
-  ["H1", 3599999],
-  ["H4", 14399999],
-  ["D1", 86399999],
-  ["W1", 604799999],
-]);
-
-function fxOpenBarToCandle(
-  fxOpenBar: FXOpenBar,
-  timeframe: FxTimeframe
-): Candle {
-  return {
-    openTime: fxOpenBar.Timestamp,
-    open: fxOpenBar.Open,
-    high: fxOpenBar.High,
-    low: fxOpenBar.Low,
-    close: fxOpenBar.Close,
-    closeTime: fxOpenBar.Timestamp + (timeDifByTimeframe.get(timeframe) ?? 0),
-    volume: fxOpenBar.Volume,
-  };
-}
-
-function fxOpenPositionToExchangePosition(
-  fxPosition: FXOpenPosition
-): ExchangePosition {
-  const {
-    Id,
-    Symbol,
-    LongAmount,
-    LongPrice,
-    ShortAmount,
-    ShortPrice,
-    Commission,
-    Profit,
-    Modified,
-  } = fxPosition;
-
-  const direction = LongAmount
-    ? POSITION_DIRECTION.Long
-    : ShortAmount
-      ? POSITION_DIRECTION.Short
-      : (0 as never);
-
-  const openPrice =
-    direction === POSITION_DIRECTION.Long
-      ? LongPrice
-      : direction === POSITION_DIRECTION.Short
-        ? ShortPrice
-        : (0 as never);
-
-  return {
-    id: Id,
-    symbol: Symbol,
-    openTime: Modified,
-    openPrice,
-    direction,
-    ammount: LongAmount ? LongAmount : ShortAmount ?? 0,
-    fee: Commission,
-    profit: Profit,
-  };
-}
-
-function fxOpenTradeToExchangeTrade({
-  Id,
-  Symbol,
-  Side,
-  Price,
-  Filled,
-  FilledAmount,
-}: FXOpenTrade): ExchangeTrade {
-  const direction =
-    Side === "Buy"
-      ? POSITION_DIRECTION.Long
-      : Side === "Sell"
-        ? POSITION_DIRECTION.Short
-        : undefined;
-
-  return {
-    id: Id,
-    symbol: Symbol,
-    direction,
-    openPrice: Price,
-    openTime: Filled,
-    ammount: FilledAmount,
-  };
 }

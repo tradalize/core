@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { FXOpenClient, FX_TIMEFRAME } from "../exchangeClients/fxOpen.js";
+import { FXOpenClient, FX_TIMEFRAME } from "../exchangeClients/fxOpen/index.js";
 import { mockAxiosClient, getAxiosStatic } from "../mocks.js";
 import { FXOpenDatafeed } from "./fxOpen.datafeed.js";
 import { TIMEFRAME, Timeframe } from "./datafeed.abstract.js";
