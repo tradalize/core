@@ -7,7 +7,7 @@ import {
   PositionDirection,
 } from "../index.js";
 
-export abstract class Strategy {
+export abstract class Strategy<TBroker extends Broker = Broker> {
   /**
    * Used for open the position "on next candle open"
    * You can set `symbol`, `timeframe` and `direction` of position you want to open
@@ -21,7 +21,7 @@ export abstract class Strategy {
    */
   protected closeOnNext: boolean;
 
-  constructor(protected broker: Broker) {}
+  constructor(protected broker: TBroker) {}
 
   public async onBeforeUpdate(candle: Candle): Promise<void> {
     if (this.broker?.currentPosition?.sl) {

@@ -171,11 +171,11 @@ export type CreateFXOpenTradePayload = {
   MarketWithSlippage?: boolean; // "MarketWithSlippage" flag (works only for "Limit" and "StopLimit" trades)
   OneCancelsTheOther?: boolean; // "OneCancelsTheOther" flag (works only for a pair of trades "Limit-Stop" or "Stop-Stop")
   OcoEqualAmount?: boolean; // "OcoEqualAmount" flag means taking the amount from the other order otherwise from the request (works only with "OneCancelsTheOther")
-  RelatedTradeId?: string; // Related Trade Id is used when option OneCancelsTheOther is set
+  RelatedTradeId?: number; // Related Trade Id is used when option OneCancelsTheOther is set
   ContingentOrder?: boolean; // "ContingentOrder" flag
   TriggerType?: FXOpenContingentOrderTriggerTypes; // Trigger Type is used when order is contingent. Possible values: "OnTime", "OnPendingOrderExpired", "OnPendingOrderPartiallyFilled"
   TriggerTime?: number; // Trigger Time is used when order is contingent and Trigger Type is "OnTime"
-  OrderIdTriggeredBy?: string; // OrderIdTriggeredBy is used when order is contingent and Trigger Type is "OnPendingOrderExpired"or "OnPendingOrderPartiallyFilled"
+  OrderIdTriggeredBy?: number; // OrderIdTriggeredBy is used when order is contingent and Trigger Type is "OnPendingOrderExpired"or "OnPendingOrderPartiallyFilled"
   Comment?: string; // Client comment
 };
 
