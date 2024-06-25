@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.6.4
+
+### Patch Changes
+
+- e9c0a95: Removing node:crypto
+
 ## 0.6.3
 
 ### Patch Changes
