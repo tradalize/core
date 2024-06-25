@@ -71,9 +71,11 @@ export function fxOpenPositionToExchangePosition(
 
 export function fxOpenTradeToExchangeTrade({
   Id,
+  Type,
   Symbol,
   Side,
   Price,
+  StopPrice,
   Filled,
   FilledAmount,
 }: FXOpenTrade): ExchangeTrade {
@@ -88,7 +90,7 @@ export function fxOpenTradeToExchangeTrade({
     id: Id,
     symbol: Symbol,
     direction,
-    openPrice: Price,
+    openPrice: Type === "Stop" ? (StopPrice as number) : Price,
     openTime: Filled,
     ammount: FilledAmount,
   };
