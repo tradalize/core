@@ -1,5 +1,4 @@
 import { AxiosError, AxiosInstance, AxiosStatic } from "axios";
-import { createHmac } from "node:crypto";
 import type { ExchangeTrade } from "../../index.js";
 import {
   CancelFXOpenTradePayload,
@@ -17,11 +16,11 @@ import {
   fxOpenBarToCandle,
   fxOpenPositionToExchangePosition,
   fxOpenTradeToExchangeTrade,
+  createHMACSignature,
 } from "./helpers.js";
 
 /**
  * CLient for the interaction with FX Open broket via TickerTrader API
- * It use node:crypto module, thus it will work only in the Node/Bun environment
  * @see https://fxopen.com
  * @see https://ttlivewebapi.fxopen.net:8443/api/doc/index Swager
  * @host https://ttlivewebapi.fxopen.net:8443/api/v2 Live API
@@ -38,15 +37,13 @@ export class FXOpenClient {
       baseURL: apiHost,
     });
 
-    this.client.interceptors.request.use((config) => {
-      const hmac = createHmac("sha256", apiSecret);
+    this.client.interceptors.request.use(async (config) => {
       const timestamp = Date.now();
 
-      const signature = hmac
-        .update(
-          `${timestamp}${apiId}${apiKey}${config.method.toUpperCase()}${config.baseURL}${config.url}${config.data ? JSON.stringify(config.data) : ""}`
-        )
-        .digest("base64");
+      const signature = await createHMACSignature(
+        apiSecret,
+        `${timestamp}${apiId}${apiKey}${config.method.toUpperCase()}${config.baseURL}${config.url}${config.data ? JSON.stringify(config.data) : ""}`
+      );
 
       config.headers.set(
         "Authorization",

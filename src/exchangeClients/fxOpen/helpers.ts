@@ -93,3 +93,27 @@ export function fxOpenTradeToExchangeTrade({
     ammount: FilledAmount,
   };
 }
+
+export async function createHMACSignature(
+  apiSecret: string,
+  dataToSign: string
+) {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(apiSecret);
+
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    keyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    cryptoKey,
+    encoder.encode(dataToSign)
+  );
+
+  return btoa(String.fromCharCode(...new Uint8Array(signature)));
+}
