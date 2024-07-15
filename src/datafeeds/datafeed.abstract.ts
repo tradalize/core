@@ -1,27 +1,5 @@
 import { LinkedList } from "../dataStructures//linkedList.js";
-import type { ObjectValues } from "../utils/utility.types.js";
-
-export type Candle = {
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  openTime: number;
-  closeTime: number;
-  volume: number;
-};
-
-export const TIMEFRAME = {
-  OneMinute: "1m",
-  FiveMinutes: "5m",
-  FifteenMinutes: "15m",
-  OneHour: "1h",
-  FourHours: "4h",
-  OneDay: "1d",
-  OneWeek: "1w",
-} as const;
-
-export type Timeframe = ObjectValues<typeof TIMEFRAME>;
+import { Candle, Timeframe } from "../exchangeClients/types.js";
 
 export abstract class Datafeed<T = Candle> {
   public list = new LinkedList<T>();

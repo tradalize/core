@@ -1,8 +1,18 @@
 import { POSITION_DIRECTION } from "../../brokers/broker.abstract.js";
-import { Candle } from "../../datafeeds/datafeed.abstract.js";
-import { ExchangePosition, ExchangeTrade } from "../types.js";
+import {
+  Candle,
+  ExchangePosition,
+  ExchangeTrade,
+  TIMEFRAME,
+  Timeframe,
+} from "../types.js";
 import type { FxTimeframe } from "./fxOpen.types.js";
-import { FXOpenBar, FXOpenPosition, FXOpenTrade } from "./fxOpen.types.js";
+import {
+  FXOpenBar,
+  FXOpenPosition,
+  FXOpenTrade,
+  FX_TIMEFRAME,
+} from "./fxOpen.types.js";
 
 export const timeDifByTimeframe = new Map<FxTimeframe, number>([
   ["M1", 59999],
@@ -118,4 +128,24 @@ export async function createHMACSignature(
   );
 
   return btoa(String.fromCharCode(...new Uint8Array(signature)));
+}
+
+const timeframesMap = new Map<Timeframe, FxTimeframe>([
+  [TIMEFRAME.OneMinute, FX_TIMEFRAME.OneMinute],
+  [TIMEFRAME.FiveMinutes, FX_TIMEFRAME.FiveMinutes],
+  [TIMEFRAME.FifteenMinutes, FX_TIMEFRAME.FifteenMinutes],
+  [TIMEFRAME.OneHour, FX_TIMEFRAME.OneHour],
+  [TIMEFRAME.FourHours, FX_TIMEFRAME.FourHours],
+  [TIMEFRAME.OneDay, FX_TIMEFRAME.OneDay],
+  [TIMEFRAME.OneWeek, FX_TIMEFRAME.OneWeek],
+]);
+
+export function getFXOpenTimeframe(timeframe: Timeframe): FxTimeframe {
+  const fxOpenTimeframe = timeframesMap.get(timeframe);
+
+  if (!fxOpenTimeframe) {
+    throw new Error(`Unsupported timeframe ${timeframe}`);
+  }
+
+  return fxOpenTimeframe;
 }

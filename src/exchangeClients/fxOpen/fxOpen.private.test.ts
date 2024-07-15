@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { FXOpenClient } from "./fxOpen.js";
+import { FXOpenPrivateClient } from "./fxOpen.private.js";
 import { mockAxiosClient, getAxiosStatic } from "../../mocks.js";
 import {
   CancelFXOpenTradePayload,
@@ -65,10 +65,10 @@ const mockFxOpenTrade: Partial<FXOpenTrade> = {
   FilledAmount: 1,
 };
 
-describe("fxOpen client", () => {
+describe("fxOpen private client", () => {
   describe("getDataForPeriod", () => {
     test("should call FXOpen API with propper params and return transformed value", async () => {
-      const client = new FXOpenClient(
+      const client = new FXOpenPrivateClient(
         fxOpenClientParams,
         getAxiosStatic(mockAxiosClient)
       );
@@ -78,19 +78,19 @@ describe("fxOpen client", () => {
       });
 
       const symbol = "EURUSD";
-      const timeframe = "M5";
-      const startFrom = Date.now();
+      const timeframe = "5m";
+      const startTime = new Date();
       const limit = -10;
 
-      const result = await client.getDataForPeriod(
+      const result = await client.getDataForPeriod({
         symbol,
         timeframe,
-        startFrom,
-        limit
-      );
+        startTime,
+        limit,
+      });
 
       expect(mockAxiosClient.get).toHaveBeenCalledWith(
-        `/quotehistory/${symbol}/${timeframe}/bars/ask?timestamp=${startFrom}&count=${limit}`
+        `/quotehistory/${symbol}/M5/bars/ask?timestamp=${startTime.getTime()}&count=${limit}`
       );
       expect(result).toStrictEqual([
         {
@@ -117,7 +117,7 @@ describe("fxOpen client", () => {
 
   describe("getOpenPositions", () => {
     test("should return transformed positions", async () => {
-      const client = new FXOpenClient(
+      const client = new FXOpenPrivateClient(
         fxOpenClientParams,
         getAxiosStatic(mockAxiosClient)
       );
@@ -146,7 +146,7 @@ describe("fxOpen client", () => {
 
   describe("getPosition", () => {
     test("should return transformed position", async () => {
-      const client = new FXOpenClient(
+      const client = new FXOpenPrivateClient(
         fxOpenClientParams,
         getAxiosStatic(mockAxiosClient)
       );
@@ -170,7 +170,7 @@ describe("fxOpen client", () => {
     });
 
     test("should return undefined if position not found", async () => {
-      const client = new FXOpenClient(
+      const client = new FXOpenPrivateClient(
         fxOpenClientParams,
         getAxiosStatic(mockAxiosClient)
       );
@@ -187,7 +187,7 @@ describe("fxOpen client", () => {
 
   describe("getAccountInfo", () => {
     test("should return account info", async () => {
-      const client = new FXOpenClient(
+      const client = new FXOpenPrivateClient(
         fxOpenClientParams,
         getAxiosStatic(mockAxiosClient)
       );
@@ -209,7 +209,7 @@ describe("fxOpen client", () => {
 
   describe("createTrade", () => {
     test("should create trade and return it", async () => {
-      const client = new FXOpenClient(
+      const client = new FXOpenPrivateClient(
         fxOpenClientParams,
         getAxiosStatic(mockAxiosClient)
       );
@@ -241,7 +241,7 @@ describe("fxOpen client", () => {
 
   describe("cancelTrade", () => {
     test("should cancel the given trade", async () => {
-      const client = new FXOpenClient(
+      const client = new FXOpenPrivateClient(
         fxOpenClientParams,
         getAxiosStatic(mockAxiosClient)
       );

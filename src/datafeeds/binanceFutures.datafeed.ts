@@ -1,6 +1,7 @@
-import { BinanceFuturesClient } from "../exchangeClients/binanceFutures.js";
+import { BinanceFuturesClient } from "../exchangeClients/binanceFutures/binanceFutures.js";
+import { Candle, Timeframe } from "../exchangeClients/types.js";
 import { MainframeProps } from "../mainframe.js";
-import { Candle, Datafeed, Timeframe } from "./datafeed.abstract.js";
+import { Datafeed } from "./datafeed.abstract.js";
 import axios from "axios";
 import type { AxiosStatic } from "axios";
 
@@ -43,7 +44,7 @@ export class BinanceFuturesDatafeed extends Datafeed {
   public async loadNextChunk(): Promise<Candle[]> {
     const candles = await this.client.getDataForPeriod({
       symbol: this.symbol,
-      interval: this.timeframe,
+      timeframe: this.timeframe,
       startTime: this.startTime,
       endTime: this.endTime,
     });

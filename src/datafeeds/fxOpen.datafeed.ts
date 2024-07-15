@@ -1,66 +1,45 @@
 import {
-  FXOpenClient,
-  FXOpenProps,
-  FX_TIMEFRAME,
-  FxTimeframe,
+  FXOpenPublicClient,
+  FXOpenPublicProps,
 } from "../exchangeClients/fxOpen/index.js";
 import type { AxiosStatic } from "axios";
 import { MainframeProps } from "../mainframe.js";
-import { Candle, Datafeed, Timeframe, TIMEFRAME } from "./datafeed.abstract.js";
+import { Datafeed } from "./datafeed.abstract.js";
+import { Timeframe, Candle } from "../exchangeClients/types.js";
 
-type Props = MainframeProps & FXOpenProps & { startTime: number };
+type Props = MainframeProps & FXOpenPublicProps & { startTime: Date };
 
 export class FXOpenDatafeed extends Datafeed {
   symbol: string;
   timeframe: Timeframe;
-  startTime: number;
-  fxOpenTimeframe: FxTimeframe;
+  startTime: Date;
 
-  client: FXOpenClient;
+  client: FXOpenPublicClient;
 
   constructor(
-    { symbol, timeframe, startTime, apiHost, apiId, apiKey, apiSecret }: Props,
+    { symbol, timeframe, startTime, apiHost }: Props,
     axios: AxiosStatic
   ) {
     super();
 
-    const fxOpenTimeframe = timeframesMap.get(timeframe);
-
-    if (!fxOpenTimeframe) {
-      throw new Error(`Unsupported timeframe ${timeframe}`);
-    }
-
     this.symbol = symbol;
-    this.fxOpenTimeframe = fxOpenTimeframe;
+    this.timeframe = timeframe;
     this.startTime = startTime;
 
-    this.client = new FXOpenClient(
-      { apiHost, apiId, apiKey, apiSecret },
-      axios
-    );
+    this.client = new FXOpenPublicClient({ apiHost }, axios);
   }
 
   async loadNextChunk(): Promise<Candle[]> {
-    const candles = await this.client.getDataForPeriod(
-      this.symbol,
-      this.fxOpenTimeframe,
-      this.startTime
-    );
+    const candles = await this.client.getDataForPeriod({
+      symbol: this.symbol,
+      timeframe: this.timeframe,
+      startTime: this.startTime,
+    });
 
     if (candles.length !== 0) {
-      this.startTime = (candles.at(-1)?.closeTime ?? Date.now()) + 1;
+      this.startTime = new Date((candles.at(-1)?.closeTime ?? Date.now()) + 1);
     }
 
     return candles;
   }
 }
-
-const timeframesMap = new Map<Timeframe, FxTimeframe>([
-  [TIMEFRAME.OneMinute, FX_TIMEFRAME.OneMinute],
-  [TIMEFRAME.FiveMinutes, FX_TIMEFRAME.FiveMinutes],
-  [TIMEFRAME.FifteenMinutes, FX_TIMEFRAME.FifteenMinutes],
-  [TIMEFRAME.OneHour, FX_TIMEFRAME.OneHour],
-  [TIMEFRAME.FourHours, FX_TIMEFRAME.FourHours],
-  [TIMEFRAME.OneDay, FX_TIMEFRAME.OneDay],
-  [TIMEFRAME.OneWeek, FX_TIMEFRAME.OneWeek],
-]);

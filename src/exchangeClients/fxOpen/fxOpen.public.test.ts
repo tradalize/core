@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { mockAxiosClient, getAxiosStatic } from "../../mocks.js";
 import { FXOpenBar } from "./fxOpen.types.js";
-import { FXOpenPublicClient } from "./fxOpenPublic.js";
+import { FXOpenPublicClient } from "./fxOpen.public.js";
 
 const apiHost = "api-host";
 const apiId = "api-id";
@@ -42,19 +42,19 @@ describe("fxOpen public client", () => {
       });
 
       const symbol = "EURUSD";
-      const timeframe = "M5";
-      const startFrom = Date.now();
+      const timeframe = "5m";
+      const startTime = new Date();
       const limit = -10;
 
-      const result = await client.getDataForPeriod(
+      const result = await client.getDataForPeriod({
         symbol,
         timeframe,
-        startFrom,
-        limit
-      );
+        startTime,
+        limit,
+      });
 
       expect(mockAxiosClient.get).toHaveBeenCalledWith(
-        `/public/quotehistory/${symbol}/${timeframe}/bars/ask?timestamp=${startFrom}&count=${limit}`
+        `/public/quotehistory/${symbol}/M5/bars/ask?timestamp=${startTime.getTime()}&count=${limit}`
       );
       expect(result).toStrictEqual([
         {

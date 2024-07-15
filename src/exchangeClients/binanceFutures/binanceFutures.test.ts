@@ -22,12 +22,12 @@ describe("Binance futures client", () => {
       const client = new BinanceFuturesClient(axiosStaticMock);
 
       const symbol = "BTCUSDT";
-      const interval = "1d";
+      const timeframe = "1d";
 
-      await client.getDataForPeriod({ symbol, interval });
+      await client.getDataForPeriod({ symbol, timeframe });
 
       expect(axiosGetMock).toHaveBeenCalledWith(
-        `/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=1500`
+        `/fapi/v1/klines?symbol=${symbol}&interval=${timeframe}&limit=1500`
       );
     });
 
@@ -37,21 +37,21 @@ describe("Binance futures client", () => {
       const client = new BinanceFuturesClient(axiosStaticMock);
 
       const symbol = "BTCUSDT";
-      const interval = "1d";
+      const timeframe = "1d";
       const startTime = new Date("01 01 2020");
       const endTime = new Date("01 01 2021");
       const limit = 100;
 
       await client.getDataForPeriod({
         symbol,
-        interval,
+        timeframe,
         startTime,
         endTime,
         limit,
       });
 
       expect(axiosGetMock).toHaveBeenCalledWith(
-        `/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}&startTime=${startTime.getTime()}&endTime=${endTime.getTime()}`
+        `/fapi/v1/klines?symbol=${symbol}&interval=${timeframe}&limit=${limit}&startTime=${startTime.getTime()}&endTime=${endTime.getTime()}`
       );
     });
 
@@ -81,9 +81,9 @@ describe("Binance futures client", () => {
       const client = new BinanceFuturesClient(axiosStaticMock);
 
       const symbol = "BTCUSDT";
-      const interval = "1d";
+      const timeframe = "1d";
 
-      const result = await client.getDataForPeriod({ symbol, interval });
+      const result = await client.getDataForPeriod({ symbol, timeframe });
 
       expect(result).toStrictEqual([
         {
@@ -126,9 +126,9 @@ describe("Binance futures client", () => {
       const client = new BinanceFuturesClient(axiosStaticMock);
 
       const symbol = "BTCUSDT";
-      const interval = "1d";
+      const timeframe = "1d";
 
-      const result = await client.getDataForPeriod({ symbol, interval });
+      const result = await client.getDataForPeriod({ symbol, timeframe });
 
       expect(result).toStrictEqual([
         {
@@ -149,10 +149,10 @@ describe("Binance futures client", () => {
       const client = new BinanceFuturesClient(axiosStaticMock);
 
       const symbol = "BTCUSDT";
-      const interval = "1d";
+      const timeframe = "1d";
 
       await expect(() =>
-        client.getDataForPeriod({ symbol, interval })
+        client.getDataForPeriod({ symbol, timeframe })
       ).rejects.toThrowError("Axios error");
     });
   });

@@ -1,5 +1,7 @@
 import type { AxiosInstance, AxiosStatic } from "axios";
-import { Candle, Timeframe } from "../index.js";
+import { Candle } from "../../index.js";
+import { ExchangeClient } from "../exchangeClient.abstract.js";
+import type { GetDataForPeriodProps } from "../types.js";
 
 export type BinanceRawKline = [
   number, // Open time
@@ -22,7 +24,7 @@ type TSymbol = {
   contractType: string;
 };
 
-export class BinanceFuturesClient {
+export class BinanceFuturesClient implements ExchangeClient {
   client: AxiosInstance;
 
   retryCounter = 0;
@@ -37,18 +39,12 @@ export class BinanceFuturesClient {
     symbol,
     startTime,
     endTime,
-    interval,
+    timeframe,
     limit = 1500,
-  }: {
-    symbol: string;
-    interval: Timeframe;
-    startTime?: Date;
-    endTime?: Date;
-    limit?: number;
-  }): Promise<Candle[]> {
+  }: GetDataForPeriodProps): Promise<Candle[]> {
     const params = new URLSearchParams({
       symbol,
-      interval,
+      interval: timeframe,
       limit: String(limit),
     });
 
@@ -61,7 +57,7 @@ export class BinanceFuturesClient {
     }
 
     try {
-      console.info(`Start loading ${symbol} ${interval}`);
+      console.info(`Start loading ${symbol} ${timeframe}`);
 
       const { data } = await this.client.get<BinanceRawKline[]>(
         "/fapi/v1/klines?" + params.toString()
@@ -86,7 +82,7 @@ export class BinanceFuturesClient {
         symbol,
         startTime,
         endTime,
-        interval,
+        timeframe,
         limit,
       });
     }

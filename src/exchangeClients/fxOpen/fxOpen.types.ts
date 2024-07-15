@@ -1,11 +1,13 @@
 import { ObjectValues } from "../../utils/utility.types.js";
 
-export type FXOpenProps = {
+export type FXOpenPrivateProps = {
   apiHost: string;
   apiId: string;
   apiKey: string;
   apiSecret: string;
 };
+
+export type FXOpenPublicProps = Pick<FXOpenPrivateProps, "apiHost">;
 
 export const FX_TIMEFRAME = {
   OneMinute: "M1",

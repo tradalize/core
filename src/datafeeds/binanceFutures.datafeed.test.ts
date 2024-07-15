@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
-import { Candle } from "./datafeed.abstract";
-import { BinanceFuturesClient } from "../exchangeClients/binanceFutures.js";
+import type { Candle } from "../index.js";
+import { BinanceFuturesClient } from "../exchangeClients/binanceFutures/index.js";
 import { BinanceFuturesDatafeed } from "./binanceFutures.datafeed";
 
 const mockCandle: Candle = {
@@ -37,7 +37,7 @@ describe("Binance Futures datafeed", () => {
       expect(result).toStrictEqual([mockCandle]);
       expect(getDataForPeriodSpy).toHaveBeenCalledWith({
         symbol,
-        interval: timeframe,
+        timeframe,
         startTime,
         endTime,
       });

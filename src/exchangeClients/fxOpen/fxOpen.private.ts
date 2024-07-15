@@ -9,15 +9,17 @@ import {
   FXOpenPosition,
   FXOpenTrade,
 } from "./fxOpen.types.js";
-import { ExchangePosition } from "../types.js";
+import type { ExchangePosition, GetDataForPeriodProps } from "../types.js";
 import { handleNotFoundError } from "../../utils/errors.js";
-import type { FXOpenProps, FxTimeframe } from "./fxOpen.types.js";
+import type { FXOpenPrivateProps } from "./fxOpen.types.js";
 import {
   fxOpenBarToCandle,
   fxOpenPositionToExchangePosition,
   fxOpenTradeToExchangeTrade,
   createHMACSignature,
+  getFXOpenTimeframe,
 } from "./helpers.js";
+import { ExchangeClient } from "../exchangeClient.abstract.js";
 
 /**
  * CLient for the interaction with FX Open broket via TickerTrader API
@@ -26,11 +28,11 @@ import {
  * @host https://ttlivewebapi.fxopen.net:8443/api/v2 Live API
  * @host https://ttdemowebapi.fxopen.net:8443/api/v2 Demo API
  */
-export class FXOpenClient {
+export class FXOpenPrivateClient implements ExchangeClient {
   client: AxiosInstance;
 
   constructor(
-    { apiHost, apiId, apiKey, apiSecret }: FXOpenProps,
+    { apiHost, apiId, apiKey, apiSecret }: FXOpenPrivateProps,
     axios: AxiosStatic
   ) {
     this.client = axios.create({
@@ -57,25 +59,25 @@ export class FXOpenClient {
   /**
    * Get candles for the period
    */
-  public async getDataForPeriod(
-    symbol: string,
-    timeframe: FxTimeframe,
-    startFrom: number,
-    limit = 1000
-  ) {
+  public async getDataForPeriod({
+    symbol,
+    timeframe,
+    startTime,
+    limit = 1000,
+  }: GetDataForPeriodProps) {
+    const fxTimeframe = getFXOpenTimeframe(timeframe);
+
     console.info(
-      `Start loading data for ${symbol} ${timeframe} since ${new Date(
-        startFrom
-      )}`
+      `Start loading data for ${symbol} ${fxTimeframe} since ${startTime}`
     );
 
     const { data } = await this.client.get<{ Bars: FXOpenBar[] }>(
-      `/quotehistory/${symbol}/${timeframe}/bars/ask?timestamp=${startFrom}&count=${limit}`
+      `/quotehistory/${symbol}/${fxTimeframe}/bars/ask?timestamp=${startTime.getTime()}&count=${limit}`
     );
 
     console.info(`Loaded ${data.Bars.length} items`);
 
-    return data.Bars.map((bar) => fxOpenBarToCandle(bar, timeframe));
+    return data.Bars.map((bar) => fxOpenBarToCandle(bar, fxTimeframe));
   }
 
   /**
