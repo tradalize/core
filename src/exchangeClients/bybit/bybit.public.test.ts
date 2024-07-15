@@ -7,7 +7,7 @@ let axiosStaticMock: AxiosStatic;
 const axiosGetMock = vi.fn();
 
 const mockByBitKline: ByBitKline = [
-  new Date("01 01 2020").getTime().toString(), // startTime
+  "1", // startTime
   "100", // openPrice
   "150", // highPrice
   "90", // lowPrice
@@ -63,7 +63,7 @@ describe("ByBitPublicClient", () => {
           low: Number(lowPrice),
           close: Number(closePrice),
           volume: Number(volume),
-          closeTime: 1577829899999,
+          closeTime: 300000,
         },
       ]);
     });
