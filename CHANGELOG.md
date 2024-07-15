@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.7.0
+
+### Minor Changes
+
+- 47ceaf4: Reworking exchange clients to align with abstract client
+
 ## 0.6.4
 
 ### Patch Changes
