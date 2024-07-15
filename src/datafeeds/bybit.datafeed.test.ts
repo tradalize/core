@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 import type { Candle } from "../index.js";
-import { BinanceFuturesClient } from "../exchangeClients/binanceFutures/index.js";
-import { BinanceFuturesDatafeed } from "./binanceFutures.datafeed";
+import { ByBitPublicClient } from "../exchangeClients/bybit/index.js";
+import { ByBitDatafeed } from "./bybit.datafeed.js";
 
 const mockCandle: Candle = {
   openTime: new Date("01 01 2020").getTime(),
@@ -22,10 +22,10 @@ describe("Binance Futures datafeed", () => {
       const endTime = new Date("01 02 2020");
 
       const getDataForPeriodSpy = vi
-        .spyOn(BinanceFuturesClient.prototype, "getDataForPeriod")
+        .spyOn(ByBitPublicClient.prototype, "getDataForPeriod")
         .mockResolvedValueOnce([mockCandle]);
 
-      const df = new BinanceFuturesDatafeed({
+      const df = new ByBitDatafeed({
         symbol,
         timeframe,
         startTime,
@@ -40,6 +40,7 @@ describe("Binance Futures datafeed", () => {
         timeframe,
         startTime,
         endTime,
+        category: "linear",
       });
     });
   });

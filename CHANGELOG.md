@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.7.1
+
+### Patch Changes
+
+- Adding ByBit client and Datafeed
+
 ## 0.7.0
 
 ### Minor Changes
