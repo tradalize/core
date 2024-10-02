@@ -54,8 +54,8 @@ export class ByBitPublicClient implements ExchangeClient {
       }`
     );
 
-    return data.result.list.map((kline) =>
-      byBitKlineToCandle(kline, byBitTimeframe)
-    );
+    return data.result.list
+      .map((kline) => byBitKlineToCandle(kline, byBitTimeframe))
+      .sort((a, b) => a.openTime - b.openTime);
   }
 }

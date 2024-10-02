@@ -1,5 +1,11 @@
 # @tradalize/core
 
+## 0.7.2
+
+### Patch Changes
+
+- Sorting bybit candles
+
 ## 0.7.1
 
 ### Patch Changes
