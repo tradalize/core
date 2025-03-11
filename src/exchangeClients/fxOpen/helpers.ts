@@ -73,7 +73,7 @@ export function fxOpenPositionToExchangePosition(
     openTime: Modified,
     openPrice,
     direction,
-    ammount: LongAmount ? LongAmount : ShortAmount ?? 0,
+    ammount: LongAmount ? LongAmount : (ShortAmount ?? 0),
     fee: Commission,
     profit: Profit,
   };
