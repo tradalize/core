@@ -12,11 +12,9 @@
 		"@types/bun": "^1.2.5",
 		"@typescript-eslint/eslint-plugin": "^8.26.1",
 		"@typescript-eslint/parser": "^8.26.1",
-		"@vitest/ui": "^3.0.8",
 		"eslint": "^9.22.0",
 		"eslint-config-prettier": "^10.1.1",
 		"prettier": "^3.5.3",
-		"rimraf": "^6.0.1",
 		"tsup": "^8.4.0",
 		"typescript": "^5.8.2",
 		"vitest": "^3.0.8"
@@ -40,9 +38,8 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "rimraf dist && tsup",
+		"build": "tsup",
 		"test": "vitest",
-		"test:ui": "vitest --ui",
 		"release": "npm run build && changeset publish",
 		"format": "prettier . --write",
 		"lint": "eslint . --fix && npm run format",

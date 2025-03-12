@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach, type Mock } from "vitest";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import { FetchClient } from "./fetchClient.js";
 
 // TODO: Add tests for FetchClient
@@ -26,9 +26,9 @@ describe.skip("FetchClient", () => {
       const endpoint = "/data";
       const responseData = { key: "value" };
 
-      (global.fetch as Mock).mockResolvedValue({
-        json: vi.fn().mockResolvedValue(responseData),
-      });
+      // (global.fetch as Mock).mockResolvedValue({
+      //   json: vi.fn().mockResolvedValue(responseData),
+      // });
 
       const result = await fetchClient.get(endpoint);
 
@@ -42,9 +42,9 @@ describe.skip("FetchClient", () => {
       const endpoint = "/data";
       const requestBody = { name: "test" };
       const responseData = { success: true };
-      (global.fetch as Mock).mockResolvedValue({
-        json: vi.fn().mockResolvedValue(responseData),
-      });
+      // (global.fetch as Mock).mockResolvedValue({
+      //   json: vi.fn().mockResolvedValue(responseData),
+      // });
 
       const result = await fetchClient.post(endpoint, requestBody);
 
