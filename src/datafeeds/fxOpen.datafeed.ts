@@ -1,13 +1,9 @@
-import {
-  FXOpenPublicClient,
-  FXOpenPublicProps,
-} from "../exchangeClients/fxOpen/index.js";
-import type { AxiosStatic } from "axios";
+import { FXOpenPublicClient } from "../exchangeClients/fxOpen/index.js";
 import { MainframeProps } from "../mainframe.js";
 import { Datafeed } from "./datafeed.abstract.js";
 import { Timeframe, Candle } from "../exchangeClients/types.js";
 
-type Props = MainframeProps & FXOpenPublicProps & { startTime: Date };
+type Props = MainframeProps & { apiHost: string; startTime: Date };
 
 export class FXOpenDatafeed extends Datafeed {
   symbol: string;
@@ -16,17 +12,14 @@ export class FXOpenDatafeed extends Datafeed {
 
   client: FXOpenPublicClient;
 
-  constructor(
-    { symbol, timeframe, startTime, apiHost }: Props,
-    axios: AxiosStatic
-  ) {
+  constructor({ symbol, timeframe, startTime, apiHost }: Props) {
     super();
 
     this.symbol = symbol;
     this.timeframe = timeframe;
     this.startTime = startTime;
 
-    this.client = new FXOpenPublicClient({ apiHost }, axios);
+    this.client = new FXOpenPublicClient(apiHost);
   }
 
   async loadNextChunk(): Promise<Candle[]> {

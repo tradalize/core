@@ -1,6 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
 import { FXOpenPublicClient } from "../exchangeClients/fxOpen/index.js";
-import { mockAxiosClient, getAxiosStatic } from "../mocks.js";
 import { FXOpenDatafeed } from "./fxOpen.datafeed.js";
 import { TIMEFRAME } from "../exchangeClients/types.js";
 
@@ -33,15 +32,12 @@ describe("FXOpenDatafeed", () => {
     const timeframe = TIMEFRAME.FiveMinutes;
     const startTime = new Date(0);
 
-    const df = new FXOpenDatafeed(
-      {
-        apiHost,
-        symbol,
-        timeframe,
-        startTime,
-      },
-      getAxiosStatic(mockAxiosClient)
-    );
+    const df = new FXOpenDatafeed({
+      apiHost,
+      symbol,
+      timeframe,
+      startTime,
+    });
 
     const getDataSpy = vi
       .spyOn(FXOpenPublicClient.prototype, "getDataForPeriod")

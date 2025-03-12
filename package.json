@@ -1,44 +1,12 @@
 {
 	"name": "@tradalize/core",
 	"version": "0.7.2",
-	"description": "Backtesting framework",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"type": "module",
-	"files": [
-		"dist"
-	],
-	"scripts": {
-		"build": "rimraf dist && tsup",
-		"test": "vitest",
-		"test:ui": "vitest --ui",
-		"release": "npm run build && changeset publish",
-		"format": "prettier . --write",
-		"lint": "eslint . --fix && npm run format",
-		"lint:ci": "eslint ./src && prettier ./src --check"
-	},
+	"author": "Vladyslav Bezsmertnyi",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/tradalize/core.git"
 	},
-	"keywords": [
-		"trading",
-		"backtesting",
-		"quant",
-		"finance"
-	],
-	"author": "Vladyslav Bezsmertnyi",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/tradalize/core/issues"
-	},
-	"homepage": "https://github.com/tradalize/core#readme",
-	"publishConfig": {
-		"access": "public"
-	},
-	"dependencies": {
-		"axios": "^1.8.2"
-	},
+	"main": "dist/index.js",
 	"devDependencies": {
 		"@changesets/cli": "^2.28.1",
 		"@types/bun": "^1.2.5",
@@ -52,5 +20,34 @@
 		"tsup": "^8.4.0",
 		"typescript": "^5.8.2",
 		"vitest": "^3.0.8"
-	}
+	},
+	"bugs": {
+		"url": "https://github.com/tradalize/core/issues"
+	},
+	"description": "Backtesting framework",
+	"files": [
+		"dist"
+	],
+	"homepage": "https://github.com/tradalize/core#readme",
+	"keywords": [
+		"trading",
+		"backtesting",
+		"quant",
+		"finance"
+	],
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "rimraf dist && tsup",
+		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"release": "npm run build && changeset publish",
+		"format": "prettier . --write",
+		"lint": "eslint . --fix && npm run format",
+		"lint:ci": "eslint ./src && prettier ./src --check"
+	},
+	"type": "module",
+	"types": "dist/index.d.ts"
 }
