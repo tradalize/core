@@ -5,8 +5,6 @@ import {
 import { Candle, Timeframe } from "../exchangeClients/types.js";
 import { MainframeProps } from "../mainframe.js";
 import { Datafeed } from "./datafeed.abstract.js";
-import axios from "axios";
-import type { AxiosStatic } from "axios";
 
 type ByBitParams = MainframeProps & {
   /**
@@ -37,10 +35,13 @@ export class ByBitDatafeed extends Datafeed {
 
   private category: ByBitSymbolCategory;
 
-  constructor(
-    { symbol, timeframe, endTime, startTime, category = "linear" }: ByBitParams,
-    axiosStatic: AxiosStatic = axios
-  ) {
+  constructor({
+    symbol,
+    timeframe,
+    endTime,
+    startTime,
+    category = "linear",
+  }: ByBitParams) {
     super();
 
     this.symbol = symbol;
@@ -49,7 +50,7 @@ export class ByBitDatafeed extends Datafeed {
     this.endTime = endTime;
     this.category = category;
 
-    this.client = new ByBitPublicClient(axiosStatic);
+    this.client = new ByBitPublicClient();
   }
 
   public async loadNextChunk(): Promise<Candle[]> {

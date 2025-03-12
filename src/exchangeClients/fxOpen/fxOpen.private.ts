@@ -1,6 +1,5 @@
-import { AxiosError, AxiosInstance, AxiosStatic } from "axios";
 import type { ExchangeTrade } from "../../index.js";
-import {
+import type {
   CancelFXOpenTradePayload,
   CancelFXOpenTradeType,
   CreateFXOpenTradePayload,
@@ -19,7 +18,8 @@ import {
   createHMACSignature,
   getFXOpenTimeframe,
 } from "./helpers.js";
-import { ExchangeClient } from "../exchangeClient.abstract.js";
+import { FetchClient } from "../../fetchClient/fetchClient.js";
+import { FXOpenPublicClient } from "./fxOpen.public.js";
 
 /**
  * CLient for the interaction with FX Open broket via TickerTrader API
@@ -28,29 +28,23 @@ import { ExchangeClient } from "../exchangeClient.abstract.js";
  * @host https://ttlivewebapi.fxopen.net:8443/api/v2 Live API
  * @host https://ttdemowebapi.fxopen.net:8443/api/v2 Demo API
  */
-export class FXOpenPrivateClient implements ExchangeClient {
-  client: AxiosInstance;
-
+export class FXOpenPrivateClient extends FXOpenPublicClient {
   constructor(
     { apiHost, apiId, apiKey, apiSecret }: FXOpenPrivateProps,
-    axios: AxiosStatic
+    fetchClient: typeof FetchClient = FetchClient
   ) {
-    this.client = axios.create({
-      baseURL: apiHost,
-    });
+    super(apiHost, fetchClient);
 
-    this.client.interceptors.request.use(async (config) => {
+    this.client.addInterceptor(async (config, { baseUrl, endpoint, body }) => {
       const timestamp = Date.now();
 
       const signature = await createHMACSignature(
         apiSecret,
-        `${timestamp}${apiId}${apiKey}${config.method.toUpperCase()}${config.baseURL}${config.url}${config.data ? JSON.stringify(config.data) : ""}`
+        `${timestamp}${apiId}${apiKey}${config.method.toUpperCase()}${baseUrl}${endpoint}${body ? JSON.stringify(body) : ""}`
       );
 
-      config.headers.set(
-        "Authorization",
-        `HMAC ${apiId}:${apiKey}:${timestamp}:${signature}`
-      );
+      config.headers["Authorization"] =
+        `HMAC ${apiId}:${apiKey}:${timestamp}:${signature}`;
 
       return config;
     });
@@ -71,7 +65,7 @@ export class FXOpenPrivateClient implements ExchangeClient {
       `Start loading data for ${symbol} ${fxTimeframe} since ${startTime}`
     );
 
-    const { data } = await this.client.get<{ Bars: FXOpenBar[] }>(
+    const data = await this.client.get<{ Bars: FXOpenBar[] }>(
       `/quotehistory/${symbol}/${fxTimeframe}/bars/ask?timestamp=${startTime.getTime()}&count=${limit}`
     );
 
@@ -84,7 +78,7 @@ export class FXOpenPrivateClient implements ExchangeClient {
    * Get list of the open positions
    */
   public async getOpenPositions(): Promise<ExchangePosition[]> {
-    const { data } = await this.client.get<FXOpenPosition[]>("/position");
+    const data = await this.client.get<FXOpenPosition[]>("/position");
 
     return data.map(fxOpenPositionToExchangePosition);
   }
@@ -97,13 +91,13 @@ export class FXOpenPrivateClient implements ExchangeClient {
     idOrSymbol: number | string
   ): Promise<ExchangePosition | void> {
     try {
-      const { data } = await this.client.get<FXOpenPosition>(
+      const data = await this.client.get<FXOpenPosition>(
         `/position/${idOrSymbol}`
       );
 
       return fxOpenPositionToExchangePosition(data);
     } catch (error) {
-      return handleNotFoundError(error as AxiosError);
+      return handleNotFoundError(error);
     }
   }
 
@@ -111,7 +105,7 @@ export class FXOpenPrivateClient implements ExchangeClient {
    * Get account info
    */
   public async getAccountInfo() {
-    const { data } = await this.client.get<FXOpenAccountInfo>("/account");
+    const data = await this.client.get<FXOpenAccountInfo>("/account");
 
     return {
       id: data.Id,
@@ -129,11 +123,11 @@ export class FXOpenPrivateClient implements ExchangeClient {
     payload: CreateFXOpenTradePayload
   ): Promise<ExchangeTrade | void> {
     try {
-      const { data } = await this.client.post<FXOpenTrade>("/trade", payload);
+      const data = await this.client.post<FXOpenTrade>("/trade", payload);
 
       return fxOpenTradeToExchangeTrade(data);
     } catch (error) {
-      return handleNotFoundError(error as AxiosError);
+      return handleNotFoundError(error);
     }
   }
 
@@ -145,7 +139,7 @@ export class FXOpenPrivateClient implements ExchangeClient {
     payload: CancelFXOpenTradePayload
   ): Promise<ExchangeTrade | void> {
     try {
-      const { data } = await this.client.delete<{
+      const data = await this.client.delete<{
         Type: CancelFXOpenTradeType;
         Trade: FXOpenTrade;
       }>(`/trade?trade.type=${payload.Type}&trade.id=${payload.Id}`);

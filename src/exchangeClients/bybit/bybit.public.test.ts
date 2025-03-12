@@ -1,10 +1,7 @@
-import { describe, test, beforeEach, vi, expect } from "vitest";
+import { describe, test, afterEach, vi, expect } from "vitest";
+import { FetchClient } from "../../fetchClient/fetchClient";
 import { ByBitPublicClient } from "./bybit.public";
-import { AxiosResponse, AxiosStatic } from "axios";
 import { ByBitKline, ByBitKlineResponse } from "./bybit.types";
-
-let axiosStaticMock: AxiosStatic;
-const axiosGetMock = vi.fn();
 
 const mockByBitKline: ByBitKline = [
   "1", // startTime
@@ -16,26 +13,24 @@ const mockByBitKline: ByBitKline = [
   "0", // turnover
 ];
 
+const baseUrl = "https://test.com";
+
 describe("ByBitPublicClient", () => {
-  beforeEach(() => {
-    axiosStaticMock = {
-      create: () => ({
-        get: axiosGetMock,
-      }),
-    } as unknown as AxiosStatic;
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   describe("getDataForPeriod", () => {
     test("should make propper api call and return transformed data", async () => {
-      axiosGetMock.mockResolvedValueOnce({
-        data: {
-          result: {
-            list: [mockByBitKline],
-          },
-        },
-      } as AxiosResponse<ByBitKlineResponse>);
+      const fetchSpy = vi.spyOn(FetchClient.prototype, "get");
 
-      const client = new ByBitPublicClient(axiosStaticMock);
+      fetchSpy.mockResolvedValueOnce({
+        result: {
+          list: [mockByBitKline],
+        },
+      } as ByBitKlineResponse);
+
+      const client = new ByBitPublicClient(baseUrl, FetchClient);
 
       const symbol = "BTCUSDT";
       const timeframe = "5m";
@@ -52,7 +47,7 @@ describe("ByBitPublicClient", () => {
       const [openTime, openPrice, highPrice, lowPrice, closePrice, volume] =
         mockByBitKline;
 
-      expect(axiosGetMock).toHaveBeenCalledWith(
+      expect(fetchSpy).toHaveBeenCalledWith(
         `market/kline?category=linear&symbol=${symbol}&interval=5&limit=1000&start=${startTime.getTime()}&end=${endTime.getTime()}`
       );
       expect(result).toStrictEqual([
@@ -66,6 +61,33 @@ describe("ByBitPublicClient", () => {
           closeTime: 300000,
         },
       ]);
+    });
+  });
+
+  describe("getSymbols", () => {
+    test("should make propper api call and return transformed symbols", async () => {
+      const fetchSpy = vi.spyOn(FetchClient.prototype, "get");
+
+      fetchSpy.mockResolvedValueOnce({
+        result: {
+          list: [
+            {
+              symbol: "BTCUSDT",
+              contractType: "LinearPerpetual",
+              quoteCoin: "USDT",
+            },
+          ],
+        },
+      });
+
+      const client = new ByBitPublicClient(baseUrl, FetchClient);
+
+      const result = await client.getSymbols();
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        "/market/instruments-info?category=linear&limit=1000"
+      );
+      expect(result).toStrictEqual(["BTCUSDT"]);
     });
   });
 });

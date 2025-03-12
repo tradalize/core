@@ -7,8 +7,6 @@ export type FXOpenPrivateProps = {
   apiSecret: string;
 };
 
-export type FXOpenPublicProps = Pick<FXOpenPrivateProps, "apiHost">;
-
 export const FX_TIMEFRAME = {
   OneMinute: "M1",
   FiveMinutes: "M5",
@@ -20,6 +18,12 @@ export const FX_TIMEFRAME = {
 } as const;
 
 export type FxTimeframe = ObjectValues<typeof FX_TIMEFRAME>;
+
+export type FXOpenSymbol = {
+  Symbol: string;
+  StatusGroupId: string;
+  SecurityDescription: string;
+};
 
 export type FXOpenPosition = {
   Id: number;

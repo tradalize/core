@@ -2,8 +2,6 @@ import { BinanceFuturesClient } from "../exchangeClients/binanceFutures/binanceF
 import { Candle, Timeframe } from "../exchangeClients/types.js";
 import { MainframeProps } from "../mainframe.js";
 import { Datafeed } from "./datafeed.abstract.js";
-import axios from "axios";
-import type { AxiosStatic } from "axios";
 
 type BinanceFuturesParams = MainframeProps & {
   /**
@@ -27,10 +25,7 @@ export class BinanceFuturesDatafeed extends Datafeed {
 
   private endTime?: Date;
 
-  constructor(
-    { symbol, timeframe, endTime, startTime }: BinanceFuturesParams,
-    axiosStatic: AxiosStatic = axios
-  ) {
+  constructor({ symbol, timeframe, endTime, startTime }: BinanceFuturesParams) {
     super();
 
     this.symbol = symbol;
@@ -38,7 +33,7 @@ export class BinanceFuturesDatafeed extends Datafeed {
     this.startTime = startTime;
     this.endTime = endTime;
 
-    this.client = new BinanceFuturesClient(axiosStatic);
+    this.client = new BinanceFuturesClient();
   }
 
   public async loadNextChunk(): Promise<Candle[]> {

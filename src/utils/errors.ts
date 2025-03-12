@@ -1,8 +1,11 @@
-import { AxiosError, HttpStatusCode } from "axios";
-
-export function handleNotFoundError(error: AxiosError) {
-  if (error?.response?.status === HttpStatusCode.NotFound) {
+export function handleNotFoundError(response: Response) {
+  if (response?.status === 404) {
     return;
   }
-  throw new Error(`${error?.message} ${error?.response?.data ?? ""}`);
+
+  console.error(response);
+
+  throw new Error(
+    `Unexpected response: ${response?.status} ${response?.statusText}`
+  );
 }

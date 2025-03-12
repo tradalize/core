@@ -26,7 +26,7 @@ export abstract class Datafeed<T = Candle> {
     return nextItem;
   }
 
-  public abstract loadNextChunk(): T[] | Promise<T[]>;
+  public abstract loadNextChunk(): Promise<T[]>;
 
   get isLast(): boolean {
     return this.list.head === null;

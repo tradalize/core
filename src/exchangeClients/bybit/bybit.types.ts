@@ -40,3 +40,9 @@ export type ByBitKlineResponse = {
     list: ByBitKline[];
   };
 };
+
+export type ByBitSymbol = {
+  symbol: string;
+  contractType: string;
+  quoteCoin: string;
+};
