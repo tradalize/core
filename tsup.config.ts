@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ["src/**/*.ts", "!src/**/*.test.*", "!src/**/*mocks.*"],
   target: "esnext",
   format: "esm",
-  platform: "node",
+  platform: "neutral",
   bundle: false,
   dts: true,
   splitting: false,

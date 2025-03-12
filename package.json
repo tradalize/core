@@ -1,56 +1,50 @@
 {
 	"name": "@tradalize/core",
 	"version": "0.7.2",
-	"description": "Backtesting framework",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"type": "module",
-	"files": [
-		"dist"
-	],
-	"scripts": {
-		"build": "rimraf dist && tsup",
-		"test": "vitest",
-		"test:ui": "vitest --ui",
-		"release": "npm run build && changeset publish",
-		"format": "prettier . --write",
-		"lint": "eslint . --fix && npm run format",
-		"lint:ci": "eslint ./src && prettier ./src --check"
-	},
+	"author": "Vladyslav Bezsmertnyi",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/tradalize/core.git"
 	},
+	"main": "dist/index.js",
+	"devDependencies": {
+		"@changesets/cli": "^2.28.1",
+		"@types/bun": "^1.2.5",
+		"@typescript-eslint/eslint-plugin": "^8.26.1",
+		"@typescript-eslint/parser": "^8.26.1",
+		"eslint": "^9.22.0",
+		"eslint-config-prettier": "^10.1.1",
+		"prettier": "^3.5.3",
+		"tsup": "^8.4.0",
+		"typescript": "^5.8.2",
+		"vitest": "^3.0.8"
+	},
+	"bugs": {
+		"url": "https://github.com/tradalize/core/issues"
+	},
+	"description": "Backtesting framework",
+	"files": [
+		"dist"
+	],
+	"homepage": "https://github.com/tradalize/core#readme",
 	"keywords": [
 		"trading",
 		"backtesting",
 		"quant",
 		"finance"
 	],
-	"author": "Vladyslav Bezsmertnyi",
 	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/tradalize/core/issues"
-	},
-	"homepage": "https://github.com/tradalize/core#readme",
 	"publishConfig": {
 		"access": "public"
 	},
-	"dependencies": {
-		"axios": "^1.6.8"
+	"scripts": {
+		"build": "tsup",
+		"test": "vitest",
+		"release": "npm run build && changeset publish",
+		"format": "prettier . --write",
+		"lint": "eslint . --fix && npm run format",
+		"lint:ci": "eslint ./src && prettier ./src --check"
 	},
-	"devDependencies": {
-		"@changesets/cli": "^2.27.1",
-		"@types/node": "^20.12.7",
-		"@typescript-eslint/eslint-plugin": "^6.15.0",
-		"@typescript-eslint/parser": "^6.15.0",
-		"@vitest/ui": "^1.5.0",
-		"eslint": "^8.56.0",
-		"eslint-config-prettier": "^9.1.0",
-		"prettier": "^3.2.5",
-		"rimraf": "^5.0.5",
-		"tsup": "^8.0.2",
-		"typescript": "^5.4.5",
-		"vitest": "^1.5.0"
-	}
+	"type": "module",
+	"types": "dist/index.d.ts"
 }

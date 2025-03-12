@@ -1,38 +1,19 @@
-import type { AxiosInstance, AxiosStatic } from "axios";
 import { Candle } from "../../index.js";
 import { ExchangeClient } from "../exchangeClient.abstract.js";
+import type { FetchClient } from "../../fetchClient/fetchClient.js";
 import type { GetDataForPeriodProps } from "../types.js";
+import type { BinanceRawKline, BinanceSymbol } from "./binance.types.js";
 
-export type BinanceRawKline = [
-  number, // Open time
-  string, // Open
-  string, // High
-  string, // Low
-  string, // Close
-  string, // Volume
-  number, // Close time
-  string, // Quote asset volume
-  number, // Number of trades
-  string, // Taker buy base asset volume
-  string, // Taker buy quote asset volume
-  string, // Ignore.
-];
+const BINANCE_FUTURES_HOST = "https://fapi.binance.com/fapi/v1/";
 
-type TSymbol = {
-  symbol: string;
-  quoteAsset: string;
-  contractType: string;
-};
-
-export class BinanceFuturesClient implements ExchangeClient {
-  client: AxiosInstance;
-
+export class BinanceFuturesClient extends ExchangeClient {
   retryCounter = 0;
 
-  constructor(axios: AxiosStatic) {
-    this.client = axios.create({
-      baseURL: "https://fapi.binance.com",
-    });
+  constructor(
+    baseUrl = BINANCE_FUTURES_HOST,
+    fetchClient?: typeof FetchClient
+  ) {
+    super(baseUrl, fetchClient);
   }
 
   public async getDataForPeriod({
@@ -59,9 +40,10 @@ export class BinanceFuturesClient implements ExchangeClient {
     try {
       console.info(`Start loading ${symbol} ${timeframe}`);
 
-      const { data } = await this.client.get<BinanceRawKline[]>(
-        "/fapi/v1/klines?" + params.toString()
+      const data = await this.client.get<BinanceRawKline[]>(
+        `/klines?${params}`
       );
+
       console.info(
         `Data loaded: ${data.length} items since ${
           startTime ? startTime.toString() : "[startTime not provided]"
@@ -88,15 +70,17 @@ export class BinanceFuturesClient implements ExchangeClient {
     }
   }
 
-  public async getExchangeInfo() {
-    const { data } = await this.client.get<{ symbols: TSymbol[] }>(
-      "/fapi/v1/exchangeInfo",
-      {
-        timeout: 2000,
-      }
+  public async getSymbols(): Promise<string[]> {
+    const data = await this.client.get<{ symbols: BinanceSymbol[] }>(
+      "/exchangeInfo"
     );
 
-    return data;
+    return data.symbols
+      .filter(
+        ({ quoteAsset, contractType }) =>
+          quoteAsset === "USDT" && contractType === "PERPETUAL"
+      )
+      .map(({ symbol }) => symbol);
   }
 }
 

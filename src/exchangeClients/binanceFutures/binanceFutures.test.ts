@@ -1,40 +1,37 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import { BinanceFuturesClient, BinanceRawKline } from "./binanceFutures.js";
+import { afterEach, describe, expect, test, vi } from "vitest";
+import { FetchClient } from "../../fetchClient/fetchClient.js";
+import { BinanceFuturesClient } from "./binanceFutures.js";
+import { BinanceRawKline } from "./binance.types.js";
 
-import type { AxiosStatic } from "axios";
-
-let axiosStaticMock: AxiosStatic;
-const axiosGetMock = vi.fn();
-
+const baseUrl = "https://test.com";
 describe("Binance futures client", () => {
-  beforeEach(() => {
-    axiosStaticMock = {
-      create: () => ({
-        get: axiosGetMock,
-      }),
-    } as unknown as AxiosStatic;
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   describe("getDataForPeriod", () => {
     test("should call api with get method with minimum possible params", async () => {
-      axiosGetMock.mockResolvedValueOnce({ data: [] });
+      const fetchSpy = vi.spyOn(FetchClient.prototype, "get");
+      fetchSpy.mockResolvedValueOnce([]);
 
-      const client = new BinanceFuturesClient(axiosStaticMock);
+      const client = new BinanceFuturesClient(baseUrl, FetchClient);
 
       const symbol = "BTCUSDT";
       const timeframe = "1d";
 
       await client.getDataForPeriod({ symbol, timeframe });
 
-      expect(axiosGetMock).toHaveBeenCalledWith(
-        `/fapi/v1/klines?symbol=${symbol}&interval=${timeframe}&limit=1500`
+      expect(fetchSpy).toHaveBeenCalledWith(
+        `/klines?symbol=${symbol}&interval=${timeframe}&limit=1500`
       );
     });
 
     test("should call api with get method with maximum possible params", async () => {
-      axiosGetMock.mockResolvedValueOnce({ data: [] });
+      const fetchSpy = vi.spyOn(FetchClient.prototype, "get");
 
-      const client = new BinanceFuturesClient(axiosStaticMock);
+      fetchSpy.mockResolvedValueOnce([]);
+
+      const client = new BinanceFuturesClient(baseUrl, FetchClient);
 
       const symbol = "BTCUSDT";
       const timeframe = "1d";
@@ -50,8 +47,8 @@ describe("Binance futures client", () => {
         limit,
       });
 
-      expect(axiosGetMock).toHaveBeenCalledWith(
-        `/fapi/v1/klines?symbol=${symbol}&interval=${timeframe}&limit=${limit}&startTime=${startTime.getTime()}&endTime=${endTime.getTime()}`
+      expect(fetchSpy).toHaveBeenCalledWith(
+        `/klines?symbol=${symbol}&interval=${timeframe}&limit=${limit}&startTime=${startTime.getTime()}&endTime=${endTime.getTime()}`
       );
     });
 
@@ -64,21 +61,21 @@ describe("Binance futures client", () => {
       const volume = 1000;
       const closeTime = new Date("01 02 2020").getTime();
 
-      axiosGetMock.mockResolvedValueOnce({
-        data: [
-          [
-            openTime,
-            String(open),
-            String(high),
-            String(low),
-            String(close),
-            String(volume),
-            closeTime,
-          ],
-        ] as Partial<BinanceRawKline>[],
-      });
+      const fetchSpy = vi.spyOn(FetchClient.prototype, "get");
 
-      const client = new BinanceFuturesClient(axiosStaticMock);
+      fetchSpy.mockResolvedValueOnce([
+        [
+          openTime,
+          String(open),
+          String(high),
+          String(low),
+          String(close),
+          String(volume),
+          closeTime,
+        ],
+      ] as Partial<BinanceRawKline>[]);
+
+      const client = new BinanceFuturesClient(baseUrl, FetchClient);
 
       const symbol = "BTCUSDT";
       const timeframe = "1d";
@@ -99,6 +96,8 @@ describe("Binance futures client", () => {
     });
 
     test("should retry on fail and load data from second attempt", async () => {
+      const fetchSpy = vi.spyOn(FetchClient.prototype, "get");
+
       const openTime = new Date("01 01 2020").getTime();
       const open = 100;
       const high = 150;
@@ -107,23 +106,21 @@ describe("Binance futures client", () => {
       const volume = 1000;
       const closeTime = new Date("01 02 2020").getTime();
 
-      axiosGetMock.mockRejectedValueOnce(new Error());
+      fetchSpy.mockRejectedValueOnce(new Error());
 
-      axiosGetMock.mockResolvedValueOnce({
-        data: [
-          [
-            openTime,
-            String(open),
-            String(high),
-            String(low),
-            String(close),
-            String(volume),
-            closeTime,
-          ],
-        ] as Partial<BinanceRawKline>[],
-      });
+      fetchSpy.mockResolvedValueOnce([
+        [
+          openTime,
+          String(open),
+          String(high),
+          String(low),
+          String(close),
+          String(volume),
+          closeTime,
+        ],
+      ] as Partial<BinanceRawKline>[]);
 
-      const client = new BinanceFuturesClient(axiosStaticMock);
+      const client = new BinanceFuturesClient(baseUrl, FetchClient);
 
       const symbol = "BTCUSDT";
       const timeframe = "1d";
@@ -144,36 +141,40 @@ describe("Binance futures client", () => {
     });
 
     test("should fail on >5 attempts to load data", async () => {
-      axiosGetMock.mockRejectedValue(new Error("Axios error"));
+      const fetchSpy = vi.spyOn(FetchClient.prototype, "get");
 
-      const client = new BinanceFuturesClient(axiosStaticMock);
+      fetchSpy.mockRejectedValue(new Error("Fetch error"));
+
+      const client = new BinanceFuturesClient(baseUrl, FetchClient);
 
       const symbol = "BTCUSDT";
       const timeframe = "1d";
 
-      await expect(() =>
+      await expect(
         client.getDataForPeriod({ symbol, timeframe })
-      ).rejects.toThrowError("Axios error");
+      ).rejects.toThrowError("Fetch error");
     });
   });
 
-  describe("getExchangeInfo", () => {
+  describe("getSymbols", () => {
     test("should call api endpoint with propper params and return data", async () => {
+      const fetchSpy = vi.spyOn(FetchClient.prototype, "get");
+
       const mockReturnData = {
         symbol: "BTCUSDT",
         quoteAsset: "USDT",
         contractType: "PERPETUAL",
       };
-      axiosGetMock.mockResolvedValueOnce({ data: [mockReturnData] });
+      fetchSpy.mockResolvedValueOnce({ symbols: [mockReturnData] });
 
-      const client = new BinanceFuturesClient(axiosStaticMock);
+      const client = new BinanceFuturesClient(baseUrl, FetchClient);
 
-      const result = await client.getExchangeInfo();
+      const result = await client.getSymbols();
 
-      expect(axiosGetMock).toHaveBeenCalledWith("/fapi/v1/exchangeInfo", {
-        timeout: 2000,
-      });
-      expect(result).toStrictEqual([mockReturnData]);
+      const expectedResult = [mockReturnData.symbol];
+
+      expect(fetchSpy).toHaveBeenCalledWith("/exchangeInfo");
+      expect(result).toStrictEqual(expectedResult);
     });
   });
 });

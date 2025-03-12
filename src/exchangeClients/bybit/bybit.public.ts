@@ -1,18 +1,18 @@
-import type { AxiosInstance, AxiosStatic } from "axios";
+import { FetchClient } from "../../fetchClient/fetchClient.js";
 import { ExchangeClient } from "../exchangeClient.abstract.js";
 import type { GetDataForPeriodProps, Candle } from "../types.js";
-import type { ByBitKlineResponse, ByBitSymbolCategory } from "./bybit.types.js";
+import type {
+  ByBitKlineResponse,
+  ByBitSymbol,
+  ByBitSymbolCategory,
+} from "./bybit.types.js";
 import { byBitKlineToCandle, getByBitTimeframe } from "./helpers.js";
 
-const API_VERSION = "v5";
+const BYBIT_API_HOST = "https://api.bybit.com/v5";
 
-export class ByBitPublicClient implements ExchangeClient {
-  client: AxiosInstance;
-
-  constructor(axios: AxiosStatic) {
-    this.client = axios.create({
-      baseURL: `https://api.bybit.com/${API_VERSION}`,
-    });
+export class ByBitPublicClient extends ExchangeClient {
+  constructor(baseUrl = BYBIT_API_HOST, fetchClient = FetchClient) {
+    super(baseUrl, fetchClient);
   }
 
   public async getDataForPeriod({
@@ -44,7 +44,7 @@ export class ByBitPublicClient implements ExchangeClient {
 
     console.info(`Start loading ${symbol} ${timeframe}`);
 
-    const { data } = await this.client.get<ByBitKlineResponse>(
+    const data = await this.client.get<ByBitKlineResponse>(
       `market/kline?${params.toString()}`
     );
 
@@ -57,5 +57,18 @@ export class ByBitPublicClient implements ExchangeClient {
     return data.result.list
       .map((kline) => byBitKlineToCandle(kline, byBitTimeframe))
       .sort((a, b) => a.openTime - b.openTime);
+  }
+
+  public async getSymbols(category: ByBitSymbolCategory = "linear") {
+    const data = await this.client.get<{ result: { list: ByBitSymbol[] } }>(
+      `/market/instruments-info?category=${category}&limit=1000`
+    );
+
+    return data.result.list
+      .filter(
+        ({ contractType, quoteCoin }) =>
+          contractType === "LinearPerpetual" && quoteCoin === "USDT"
+      )
+      .map(({ symbol }) => symbol);
   }
 }
