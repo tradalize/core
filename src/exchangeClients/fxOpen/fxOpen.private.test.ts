@@ -3,7 +3,7 @@ import { FXOpenPrivateClient } from "./fxOpen.private.js";
 import {
   CancelFXOpenTradePayload,
   CreateFXOpenTradePayload,
-  FXOpenBar,
+  // FXOpenBar,
   FXOpenPosition,
   FXOpenTrade,
 } from "./fxOpen.types.js";
@@ -16,24 +16,24 @@ const apiSecret = "api-secret";
 
 const fxOpenClientParams = { apiHost, apiId, apiKey, apiSecret };
 
-const mockFxOpenBars: FXOpenBar[] = [
-  {
-    Volume: 1,
-    Close: 2,
-    Low: 3,
-    High: 4,
-    Open: 5,
-    Timestamp: 1,
-  },
-  {
-    Volume: 1,
-    Close: 2,
-    Low: 3,
-    High: 4,
-    Open: 5,
-    Timestamp: 1,
-  },
-];
+// const mockFxOpenBars: FXOpenBar[] = [
+//   {
+//     Volume: 1,
+//     Close: 2,
+//     Low: 3,
+//     High: 4,
+//     Open: 5,
+//     Timestamp: 1,
+//   },
+//   {
+//     Volume: 1,
+//     Close: 2,
+//     Low: 3,
+//     High: 4,
+//     Open: 5,
+//     Timestamp: 1,
+//   },
+// ];
 
 const mockFxOpenPosition: FXOpenPosition = {
   Id: 0,

@@ -10,11 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20.x
+          bun-version: latest
 
-      - run: npm ci
-      - run: npm run lint:ci
-      - run: npm run test
-      - run: npm run build
+      - run: bun install
+      - run: bun lint:ci
+      - run: bun test
+      - run: bun run build

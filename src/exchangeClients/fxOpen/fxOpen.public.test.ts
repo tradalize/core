@@ -1,27 +1,27 @@
 import { describe, expect, test } from "vitest";
-import { FXOpenBar } from "./fxOpen.types.js";
+// import { FXOpenBar } from "./fxOpen.types.js";
 import { FXOpenPublicClient } from "./fxOpen.public.js";
 
 const apiHost = "api-host";
 
-const mockFxOpenBars: FXOpenBar[] = [
-  {
-    Volume: 1,
-    Close: 2,
-    Low: 3,
-    High: 4,
-    Open: 5,
-    Timestamp: 1,
-  },
-  {
-    Volume: 1,
-    Close: 2,
-    Low: 3,
-    High: 4,
-    Open: 5,
-    Timestamp: 1,
-  },
-];
+// const mockFxOpenBars: FXOpenBar[] = [
+//   {
+//     Volume: 1,
+//     Close: 2,
+//     Low: 3,
+//     High: 4,
+//     Open: 5,
+//     Timestamp: 1,
+//   },
+//   {
+//     Volume: 1,
+//     Close: 2,
+//     Low: 3,
+//     High: 4,
+//     Open: 5,
+//     Timestamp: 1,
+//   },
+// ];
 
 // TODO: Implement tests for the FXOpenPublicClient
 describe.skip("fxOpen public client", () => {
