@@ -1,5 +1,5 @@
-import { Position } from "../brokers/broker.abstract.js";
-import { ObjectValues } from "../utils/utility.types.js";
+import type { Position } from "../interface.js";
+import type { ObjectValues } from "../utils/utility.types.js";
 
 export type ExchangeTrade = Pick<
   Position,

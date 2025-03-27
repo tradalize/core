@@ -1,5 +1,6 @@
 import { vi } from "vitest";
-import { Broker, Position } from "./broker.abstract.js";
+import { Broker } from "./broker.abstract.js";
+import type { Position } from "../interface.js";
 
 export class MockBroker extends Broker {
   public currentPosition: Position | null = null;

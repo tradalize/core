@@ -1,9 +1,9 @@
 import { LinkedList } from "../dataStructures/linkedList.js";
+import type { Position } from "../interface.js";
 import {
   Broker,
   ClosePositionPayload,
   OpenPositionPayload,
-  Position,
 } from "./broker.abstract.js";
 
 export class MemoryBroker extends Broker {
@@ -28,6 +28,7 @@ export class MemoryBroker extends Broker {
 
     const newPosition: Position = {
       id: this.positionCounter,
+      exchange: this.props.exchage,
       openTime: time,
       openPrice: price,
       ...restPositionPayload,

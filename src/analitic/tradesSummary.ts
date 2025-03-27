@@ -1,4 +1,4 @@
-import { POSITION_DIRECTION, Position } from "../brokers/broker.abstract.js";
+import { POSITION_DIRECTION, Position } from "../index.js";
 import { average, toFinite } from "../utils/math.js";
 import { milisendsToDuration } from "../utils/timeFormatters.js";
 

@@ -24,11 +24,11 @@ export abstract class Strategy<TBroker extends Broker = Broker> {
   constructor(protected broker: TBroker) {}
 
   public async onBeforeUpdate(candle: Candle): Promise<void> {
-    if (this.broker?.currentPosition?.sl) {
+    if (this.broker?.currentPosition?.stopLoss) {
       await this.checkSl(candle);
     }
 
-    if (this.broker?.currentPosition?.tp) {
+    if (this.broker?.currentPosition?.takeProfit) {
       await this.checkTp(candle);
     }
 
@@ -60,8 +60,8 @@ export abstract class Strategy<TBroker extends Broker = Broker> {
     await this.broker.openPosition({
       time: openTime,
       price: open,
-      sl: this.calcSl(open, this.openOnNext.direction),
-      tp: this.calcTp(open, this.openOnNext.direction),
+      stopLoss: this.calcSl(open, this.openOnNext.direction),
+      takeProfit: this.calcTp(open, this.openOnNext.direction),
       ...this.openOnNext,
     });
 
@@ -86,12 +86,12 @@ export abstract class Strategy<TBroker extends Broker = Broker> {
   private async checkSl(candle: Candle) {
     if (
       (this.broker.currentPosition.direction === POSITION_DIRECTION.Long &&
-        this.broker.currentPosition.sl > candle.low) ||
+        this.broker.currentPosition.stopLoss > candle.low) ||
       (this.broker.currentPosition.direction === POSITION_DIRECTION.Short &&
-        this.broker.currentPosition.sl < candle.high)
+        this.broker.currentPosition.stopLoss < candle.high)
     ) {
       await this.broker.closePosition({
-        price: this.broker.currentPosition.sl,
+        price: this.broker.currentPosition.stopLoss,
         time: candle.closeTime,
       });
     }
@@ -100,12 +100,12 @@ export abstract class Strategy<TBroker extends Broker = Broker> {
   private async checkTp(candle: Candle) {
     if (
       (this.broker.currentPosition.direction === POSITION_DIRECTION.Long &&
-        this.broker.currentPosition.tp < candle.high) ||
+        this.broker.currentPosition.takeProfit < candle.high) ||
       (this.broker.currentPosition.direction === POSITION_DIRECTION.Short &&
-        this.broker.currentPosition.tp > candle.low)
+        this.broker.currentPosition.takeProfit > candle.low)
     ) {
       await this.broker.closePosition({
-        price: this.broker.currentPosition.tp,
+        price: this.broker.currentPosition.takeProfit,
         time: candle.closeTime,
       });
     }

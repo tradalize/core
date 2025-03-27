@@ -1,4 +1,4 @@
-import { POSITION_DIRECTION } from "../../brokers/broker.abstract.js";
+import { POSITION_DIRECTION } from "../../index.js";
 import {
   Candle,
   ExchangePosition,

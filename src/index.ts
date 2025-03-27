@@ -6,3 +6,4 @@ export * from "./utils/index.js";
 export * from "./analitic/index.js";
 export * from "./dataStructures/index.js";
 export * from "./exchangeClients/index.js";
+export * from "./interface.js";
