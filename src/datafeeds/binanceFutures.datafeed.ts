@@ -15,37 +15,30 @@ type BinanceFuturesParams = MainframeProps & {
 };
 
 export class BinanceFuturesDatafeed extends Datafeed {
-  private client: BinanceFuturesClient;
+  public static readonly client: BinanceFuturesClient =
+    new BinanceFuturesClient();
 
   public symbol: string;
 
   public timeframe: Timeframe;
 
-  private startTime?: Date;
-
-  private endTime?: Date;
-
-  constructor({ symbol, timeframe, endTime, startTime }: BinanceFuturesParams) {
-    super();
+  constructor({ symbol, timeframe }: BinanceFuturesParams) {
+    super({ timeframe, preserveCandlesLimit: 10 });
 
     this.symbol = symbol;
     this.timeframe = timeframe;
-    this.startTime = startTime;
-    this.endTime = endTime;
-
-    this.client = new BinanceFuturesClient();
   }
 
   public async loadNextChunk(): Promise<Candle[]> {
-    const candles = await this.client.getDataForPeriod({
+    const candles = await BinanceFuturesDatafeed.client.getDataForPeriod({
       symbol: this.symbol,
       timeframe: this.timeframe,
-      startTime: this.startTime,
-      endTime: this.endTime,
+      startTime: new Date(this.time),
+      limit: this.limit,
     });
 
-    if (candles.length !== 0) {
-      this.startTime = new Date(candles.at(-1).closeTime);
+    if (candles.length < this.limit) {
+      this.dataExceed = true;
     }
 
     return candles;

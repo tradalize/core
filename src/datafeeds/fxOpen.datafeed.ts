@@ -3,6 +3,16 @@ import { MainframeProps } from "../mainframe.js";
 import { Datafeed } from "./datafeed.abstract.js";
 import { Timeframe, Candle } from "../exchangeClients/types.js";
 
+let exchangeClient: FXOpenPublicClient;
+
+function getExchangeClient(apiHost: string) {
+  if (!exchangeClient) {
+    exchangeClient = new FXOpenPublicClient(apiHost);
+  }
+
+  return exchangeClient;
+}
+
 type Props = MainframeProps & { apiHost: string; startTime: Date };
 
 export class FXOpenDatafeed extends Datafeed {
@@ -13,13 +23,13 @@ export class FXOpenDatafeed extends Datafeed {
   client: FXOpenPublicClient;
 
   constructor({ symbol, timeframe, startTime, apiHost }: Props) {
-    super();
+    super({ timeframe });
 
     this.symbol = symbol;
     this.timeframe = timeframe;
     this.startTime = startTime;
 
-    this.client = new FXOpenPublicClient(apiHost);
+    this.client = getExchangeClient(apiHost);
   }
 
   async loadNextChunk(): Promise<Candle[]> {

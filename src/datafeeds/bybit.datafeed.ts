@@ -4,26 +4,27 @@ import {
 } from "../exchangeClients/index.js";
 import { Candle, Timeframe } from "../exchangeClients/types.js";
 import { MainframeProps } from "../mainframe.js";
-import { Datafeed } from "./datafeed.abstract.js";
+import { Datafeed, type DatafeedProps } from "./datafeed.abstract.js";
 
-type ByBitParams = MainframeProps & {
-  /**
-   * Date to start load from
-   */
-  startTime?: Date;
-  /**
-   * Load until that date
-   */
-  endTime?: Date;
-  /**
-   * Category of asset
-   * @default linear
-   */
-  category?: ByBitSymbolCategory;
-};
+type ByBitParams = MainframeProps &
+  DatafeedProps & {
+    /**
+     * Date to start load from
+     */
+    startTime?: Date;
+    /**
+     * Load until that date
+     */
+    endTime?: Date;
+    /**
+     * Category of asset
+     * @default linear
+     */
+    category?: ByBitSymbolCategory;
+  };
 
 export class ByBitDatafeed extends Datafeed {
-  private client: ByBitPublicClient;
+  public static readonly client: ByBitPublicClient = new ByBitPublicClient();
 
   public symbol: string;
 
@@ -42,19 +43,17 @@ export class ByBitDatafeed extends Datafeed {
     startTime,
     category = "linear",
   }: ByBitParams) {
-    super();
+    super({ timeframe });
 
     this.symbol = symbol;
     this.timeframe = timeframe;
     this.startTime = startTime;
     this.endTime = endTime;
     this.category = category;
-
-    this.client = new ByBitPublicClient();
   }
 
   public async loadNextChunk(): Promise<Candle[]> {
-    const candles = await this.client.getDataForPeriod({
+    const candles = await ByBitDatafeed.client.getDataForPeriod({
       symbol: this.symbol,
       timeframe: this.timeframe,
       startTime: this.startTime,
